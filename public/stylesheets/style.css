@@ -1,0 +1,16 @@
+body {
+		background: #4cd6ff;
+		padding: 50px;
+		font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+	color: #00B7FF;
+}
+
+.boat {
+	margin-top: 20vh;
+	height: 500px;
+	width: 500px;
+	margin: auto;
+}
