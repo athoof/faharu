@@ -1,0 +1,10 @@
+2017-06-14T17:43:15.772169063 0.423299s notice: Recursively removing directory /root/faharu/rethinkdb_data/tmp
+2017-06-14T17:43:15.786173580 0.437301s notice: Initializing directory /root/faharu/rethinkdb_data
+2017-06-14T17:43:15.786812556 0.437940s info: Creating a default database for your convenience. (This is because you ran 'rethinkdb' without 'create', 'serve', or '--join', and the directory '/root/faharu/rethinkdb_data' did not already exist or is empty.)
+2017-06-14T17:43:15.786897222 0.438024s notice: Running rethinkdb 2.3.5~0xenial (GCC 5.3.1)...
+2017-06-14T17:43:15.800837617 0.451973s notice: Running on Linux 4.4.44-1-pve x86_64
+2017-06-14T17:43:15.801406494 0.452534s notice: Loading data from directory /root/faharu/rethinkdb_data
+2017-06-14T17:43:15.948409780 0.599538s info: Automatically using cache size of 100 MB
+2017-06-14T17:43:15.950781443 0.601909s warn: Cache size does not leave much memory for server and query overhead (available memory: 862 MB).
+2017-06-14T17:43:15.950798107 0.601925s warn: Cache size is very low and may impact performance.
+2017-06-14T17:43:15.953371932 0.604499s error: TCP socket creation failed for port 29015: Address already in use.
