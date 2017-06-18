@@ -1,0 +1,15 @@
+extends layout
+
+block content
+	h1= Kandu
+	div.boat
+		table
+			tr
+				td Node
+				td Latitude
+				td Longitude
+			each x in data
+				tr
+					td= x.nodeNumber
+					td= x.location[0].latitude
+					td= x.location[1].longitude
