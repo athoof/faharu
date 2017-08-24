@@ -1,0 +1,24 @@
+2017-08-23T11:18:59.767789610 0.316659s notice: Recursively removing directory /root/faharu/routes/rethinkdb_data/tmp
+2017-08-23T11:18:59.770895360 0.319764s notice: Initializing directory /root/faharu/routes/rethinkdb_data
+2017-08-23T11:18:59.770978725 0.319847s info: Creating a default database for your convenience. (This is because you ran 'rethinkdb' without 'create', 'serve', or '--join', and the directory '/root/faharu/routes/rethinkdb_data' did not already exist or is empty.)
+2017-08-23T11:18:59.771014530 0.319883s notice: Running rethinkdb 2.3.6~0xenial (GCC 5.3.1)...
+2017-08-23T11:18:59.773535117 0.322405s notice: Running on Linux 4.4.67-1-pve x86_64
+2017-08-23T11:18:59.773580490 0.322449s notice: Loading data from directory /root/faharu/routes/rethinkdb_data
+2017-08-23T11:18:59.950062159 0.498931s info: Automatically using cache size of 100 MB
+2017-08-23T11:18:59.953656867 0.502525s warn: Cache size does not leave much memory for server and query overhead (available memory: 852 MB).
+2017-08-23T11:18:59.953663030 0.502531s warn: Cache size is very low and may impact performance.
+2017-08-23T11:18:59.993280222 0.542149s notice: Listening for intracluster connections on port 29015
+2017-08-23T11:18:59.994991027 0.543859s notice: Listening for client driver connections on port 28015
+2017-08-23T11:18:59.995073207 0.543941s notice: Listening for administrative HTTP connections on port 8080
+2017-08-23T11:19:00.070302210 0.619171s notice: Listening on cluster addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1816
+2017-08-23T11:19:00.109270720 0.658139s notice: Listening on driver addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1816
+2017-08-23T11:19:00.149373599 0.698242s notice: Listening on http addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1816
+2017-08-23T11:19:00.149384020 0.698252s notice: Server ready, "v20379_xam" b72ba2d7-d77e-48c1-8a26-ede235dd806a
+2017-08-23T11:33:03.508301996 844.057170s info: Table 64d411a7-dedc-456c-bc62-647eb0914b21: Added replica on this server.
+2017-08-23T11:33:03.508376036 844.057244s info: Table 64d411a7-dedc-456c-bc62-647eb0914b21: Starting a new Raft election for term 1.
+2017-08-23T11:33:03.520477906 844.069346s info: Table 64d411a7-dedc-456c-bc62-647eb0914b21: This server is Raft leader for term 1. Latest log index is 0.
+2017-08-23T12:01:03.927208273 2524.476077s info: Table 431230db-347a-4420-80e0-2cdc52825329: Added replica on this server.
+2017-08-23T12:01:03.927296240 2524.476165s info: Table 431230db-347a-4420-80e0-2cdc52825329: Starting a new Raft election for term 1.
+2017-08-23T12:01:03.929858735 2524.478727s info: Table 431230db-347a-4420-80e0-2cdc52825329: This server is Raft leader for term 1. Latest log index is 0.
+2017-08-23T12:15:14.847187069 3375.396056s notice: Removing file /root/faharu/routes/rethinkdb_data/64d411a7-dedc-456c-bc62-647eb0914b21
+2017-08-23T12:15:14.852953638 3375.401822s info: Table 64d411a7-dedc-456c-bc62-647eb0914b21: Deleted the table.

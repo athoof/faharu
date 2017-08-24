@@ -34,3 +34,36 @@
 2017-06-15T14:46:33.273528033 0.826242s notice: Listening on driver addresses: 127.0.0.1, 185.203.116.151, ::1, 2a07:5741:0:541::1, fe80::509c:80ff:fe37:5c6c%1158
 2017-06-15T14:46:33.348557695 0.901272s notice: Listening on http addresses: 127.0.0.1, 185.203.116.151, ::1, 2a07:5741:0:541::1, fe80::509c:80ff:fe37:5c6c%1158
 2017-06-15T14:46:33.348915635 0.901629s notice: Server ready, "v12780_7jx" be87918c-ed50-4834-b6a1-da78c8ab8915
+2017-08-20T09:59:19.474771436 0.308996s notice: Recursively removing directory /root/faharu/rethinkdb_data/tmp
+2017-08-20T09:59:19.477895242 0.312119s notice: Running rethinkdb 2.3.6~0xenial (GCC 5.3.1)...
+2017-08-20T09:59:19.498775350 0.333001s notice: Running on Linux 4.4.67-1-pve x86_64
+2017-08-20T09:59:19.499291380 0.333515s notice: Loading data from directory /root/faharu/rethinkdb_data
+2017-08-20T09:59:19.593512640 0.427737s info: Automatically using cache size of 100 MB
+2017-08-20T09:59:19.595146126 0.429370s warn: Cache size does not leave much memory for server and query overhead (available memory: 670 MB).
+2017-08-20T09:59:19.595152202 0.429376s warn: Cache size is very low and may impact performance.
+2017-08-20T09:59:19.596066776 0.430290s notice: Listening for intracluster connections on port 29015
+2017-08-20T09:59:19.597705059 0.431929s notice: Listening for client driver connections on port 28015
+2017-08-20T09:59:19.597786069 0.432010s notice: Listening for administrative HTTP connections on port 8080
+2017-08-20T09:59:19.597787012 0.432010s notice: Listening on cluster addresses: 127.0.0.1, ::1
+2017-08-20T09:59:19.597788685 0.432012s notice: Listening on driver addresses: 127.0.0.1, ::1
+2017-08-20T09:59:19.597789088 0.432012s notice: Listening on http addresses: 127.0.0.1, ::1
+2017-08-20T09:59:19.597790680 0.432014s notice: To fully expose RethinkDB on the network, bind to all addresses by running rethinkdb with the `--bind all` command line option.
+2017-08-20T09:59:19.597792343 0.432016s notice: Server ready, "v12780_7jx" be87918c-ed50-4834-b6a1-da78c8ab8915
+2017-08-20T09:59:26.173031009 7.007255s notice: Server got SIGINT from pid 0, uid 0; shutting down...
+2017-08-20T09:59:26.173153657 7.007377s notice: Shutting down client connections...
+2017-08-20T09:59:26.242918268 7.077142s notice: All client connections closed.
+2017-08-20T09:59:26.242920624 7.077144s notice: Shutting down storage engine... (This may take a while if you had a lot of unflushed data in the writeback cache.)
+2017-08-20T09:59:26.243310592 7.077534s notice: Storage engine shut down.
+2017-08-20T09:59:31.183299470 0.216264s notice: Running rethinkdb 2.3.6~0xenial (GCC 5.3.1)...
+2017-08-20T09:59:31.185830794 0.218796s notice: Running on Linux 4.4.67-1-pve x86_64
+2017-08-20T09:59:31.185864839 0.218829s notice: Loading data from directory /root/faharu/rethinkdb_data
+2017-08-20T09:59:31.195162332 0.228127s info: Automatically using cache size of 100 MB
+2017-08-20T09:59:31.196613010 0.229577s warn: Cache size does not leave much memory for server and query overhead (available memory: 671 MB).
+2017-08-20T09:59:31.196618738 0.229583s warn: Cache size is very low and may impact performance.
+2017-08-20T09:59:31.272157545 0.305122s notice: Listening for intracluster connections on port 29015
+2017-08-20T09:59:31.273752617 0.306717s notice: Listening for client driver connections on port 28015
+2017-08-20T09:59:31.273831860 0.306796s notice: Listening for administrative HTTP connections on port 8080
+2017-08-20T09:59:31.353521503 0.386486s notice: Listening on cluster addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1816
+2017-08-20T09:59:31.392134180 0.425099s notice: Listening on driver addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1816
+2017-08-20T09:59:31.467047303 0.500012s notice: Listening on http addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1816
+2017-08-20T09:59:31.467055142 0.500019s notice: Server ready, "v12780_7jx" be87918c-ed50-4834-b6a1-da78c8ab8915

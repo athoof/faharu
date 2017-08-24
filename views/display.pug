@@ -5,11 +5,13 @@ block content
 	div.boat
 		table
 			tr
-				td Node
+				td PathNumber
+				td NodeNumber
 				td Latitude
 				td Longitude
-			each x in data
+			each record in data
 				tr
-					td= x.nodeNumber
-					td= x.location[0].latitude
-					td= x.location[1].longitude
+					td= record.pathNumber
+					td= record.path.nodeNumber
+					td= record.path.location.latitude
+					td= record.path.location.longitude
