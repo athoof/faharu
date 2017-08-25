@@ -6,18 +6,8 @@ var router = express.Router();
 // var Location = require('location.js');
 var connection;
 var connStatus = false;
-var nodeArray = [];
-var path = [];
-var pathNumber;
 var currentID = 0;
 var x;
-
-class Path {
-	constructor(user, NodeArray) {
-		this.user = user;
-		this.NodeArray = node;
-	}
-}
 
 class Node {
 	constructor(latitude, longitude, nodeNumber, timestamp) {
@@ -27,15 +17,6 @@ class Node {
 		this.timestamp = timestamp;
 	}
 }
-
-class Location {
-	constructor(latitude, longitude) {
-		this.latitude = latitude;
-		this.longitude = longitude;
-	}
-}
-
-// module.exports = Location;
 
 router.get ('/drop', (req, res) => {
 	r.connect({db: 'vedi'}, (err, conn) => {
@@ -58,31 +39,9 @@ router.get ('/drop', (req, res) => {
 				})
 			}
 		})
-			// })
 		res.send('ok')
 	})
 })
-/*
-router.get('/', (req, res) => {
-	r.connect({db: 'vedi'}, (err, conn) => {
-		r.table('userLocation').run(conn, (err, cursor) => {
-			if (err) throw err;
-			cursor.toArray((err, result) => {
-				if (err) throw err;
-				x=result 
-				// res.send(JSON.stringify(result[0], null, 2))
-				console.log(result.length);
-				result.forEach((r, index) => {
-					// if (r.pathNumber.length)
-					// console.log(r.length);
-				})
-				// console.log(JSON.stringify(result, null, 2));
-				res.send('ok')
-			});
-		});
-	});
-	// res.render('display', {data: y, data2: x});
-});*/
 
 router.post('/updatepath', (req, res) => {
 	var recording = req.body.recording;
