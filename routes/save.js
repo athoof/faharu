@@ -1,13 +1,48 @@
 var r = require('rethinkdb');
 var _ = require('lodash');
+// const io = require('socket.io')();
 
 var express = require('express');
 var router = express.Router();
 // var Location = require('location.js');
 var connection;
 var connStatus = false;
-var currentID = 0;
+var currentID = null;
 var x;
+const io = require('socket.io')(8000);
+
+io.on('connection', function (socket) {
+  // socket.emit('node', { hello: 'world' });
+  socket.on('addNode', function (node) {
+    // console.log(node);
+    save(node);
+  });
+
+  socket.on('beginPath', function (node) {
+    console.log(node);
+    beginPath(node);
+  });
+
+  socket.on('endPath', function (node) {
+    console.log(node);
+    endPath(node);
+  });
+
+});
+
+
+// console.log(io.connected);
+
+// io.on('connection', function (socket) {
+//   socket.emit('news', { hello: 'world' });
+//   socket.on('my other event', function (data) {
+//     console.log(data);
+//   });
+// });
+
+// const port = 8000;
+// io.listen(port);
+// console.log('Listening');
 
 class Node {
 	constructor(latitude, longitude, nodeNumber, timestamp) {
@@ -108,162 +143,46 @@ router.post('/updatepath', (req, res) => {
 });
 
 
-router.post('/beginpath', (req, res) => {
-	var recording = req.body.recording;
-	var latitude = req.body.latitude ? req.body.latitude : '0';
-	var longitude = req.body.longitude ? req.body.longitude : '0';
-	var user = req.body.user ? req.body.user : 'nouser';
-	// var nodeNumber = req.body.nodeNumber ? req.body.nodeNumber : '0';
-	// var timestamp = req.body.timestamp ? req.body.timestamp : '0';
-
-	// var L = new Node(latitude, longitude, nodeNumber, timestamp);
-
-	if (req.body.recording == true) {
-		console.log('Begin recording');
+function save(node) {
+	console.log('Saving #', node.nodeNumber)
+	if (node.recording == true) {
+		console.log('Adding node...');
 		r.connect({db: 'vedi'}, (err, conn) => {
 			if (err) throw err;
-			r.table('userLocation').insert(
-				{
-					user: user,
-					path: [{ 
-						nodeNumber: 0,
-						latitude: latitude,
-						longitude: longitude,
-						// timestamp: Math.floor(r.now() /1000),
-					}],
-					// startTime: Math.floor(r.now()/1000),
-				},
-				{returnChanges: true}
-			).run(conn, (err, result) => {
-				if(err) throw err;
-				ID = result.generated_keys;
-				currentID = ID[0];
-				console.log("Inserted: " + currentID)
-			})
-			// .run(conn, (err, result) => {
-			// 		if (err) throw err;
-			// 		result = _.orderBy(result, ['startTime'], ['asc']);
-			// 		console.log('Created path #' + _.last(result).user,  );
-			// })
-		})
+			if(currentID == null) {
+				r.table('userLocation').insert({
+					user: node.user,
+					path: [{
+						nodeNumber: node.nodeNumber,
+						latitude: node.latitude,
+						longitude: node.longitude,
+						timestamp: node.timestamp,
+					}]
+				}).run(conn, (err, cursor) => {
+					if (err) throw err;
+					console.log('Inserted initial')
+					currentID = cursor.generated_keys[0];
+				})
+			} else {
+				if (typeof currentID !== 'undefined' && currentID !== null) {
+					console.log('currentID = ', currentID, 'Path exists, adding ', node.nodeNumber)
+					r.table('userLocation').get(currentID).update({
+						path: r.row("path").append({
+							nodeNumber: node.nodeNumber,
+							latitude: node.latitude,
+							longitude: node.longitude,
+							timestamp: node.timestamp,
+						})
+					}).run(conn, (err, res) => {
+						if (err) throw err;
+
+					})				
+				} else { 
+					console.log('currentID is null');
+				}
+			}
+		});
 	}
-
-});
-
-router.post('/', function(req, res) {
-
-	var recording = req.body.recording;
-	var latitude = req.body.latitude ? req.body.latitude : '0';
-	var longitude = req.body.longitude ? req.body.longitude : '0';
-	var user = req.body.user ? req.body.user : 'nouser';
-	var nodeNumber = req.body.nodeNumber ? req.body.nodeNumber : '0';
-	var L = new Node(latitude, longitude, nodeNumber);
-
-	// if (req.body.recording) {
-	// 	path.push([L, false]);
-	// } else {
-	// 	path.push([L, true]);
-	// }
-
-	if (req.body.recording) {
-		// console.log('Begin recording');
-		nodeArray.push(L, user);
-		console.log('#' + L.nodeNumber + ' | ' + L.latitude + ', ' + L.longitude + 'User: ' + user);
-
-	}
-
-	// let i = path.length - 1;
-	
-	// if (i == 0 && path[i][1] == true) {
-	// 	console.log('Begin recording');
-	// 	// startRecording(i);
-	// 	i++;
-	// }
-
-	// if (!path[i][1]) { //if false/not recording
-	// 	// stopRecording(i);
-	// 	console.log('Stop recording');
-	// 	console.log('#' + i + ' | ' + L.latitude + ', ' + L.longitude);
-	// 	// i = 0;//reset iterator so next path begins with node #0
-	// }
-
-
-	// console.log(path[i][1]);
-	// console.log(p);
-	// console.log('Status: ' + connStatus);
-	// console.log('Recording: ' + recording  + '\n' + 'Latitude: ' + latitude + ', Longitude: ' + longitude)
-	// pathArray.push(p);
-	// console.log(pathArray);
-	res.send('ok');
-})
-
-/*
-.run(conn, (err, cursor) => {
-			if (err) throw err;
-			cursor.toArray((err, result) => {
-				if (err) throw err;
-				let x = result.length;
-				let pathNumber = pathNumber ? result[x].pathNumber+1 : 0;
-				console.log('result pathNumber ' + x)
-			})
-		})
-		*/
-
-function getLatest(user) {
-	r.connect ({db: 'vedi'}, (err, conn) => {
-		if (err) throw err;
-		r.table('userLocation').run(conn, (err, cursor) => {
-			if(err) throw err;
-			cursor.toArray((err, result) => {
-				if (err) throw err;
-				pathNumber = pathNumber ? result[x].pathNumber+1 : 0;
-			})
-		})
-	})
-}
-
-function startRecording(firstNode) {
-	r.connect({db: 'vedi'}, (err, conn) => {
-		if (err) throw err;
-		r.table('userLocation').insert({
-				path: [],
-			}).run(conn, (err, result) => {
-			if (err) throw err;
-			console.log('Created path ' + result.id);
-		})
-	})
-}
-
-function updatePath(pathID) {//has to work
-	r.connect({db: 'vedi'}, (err, conn) => {
-		if (err) throw err;
-		r.table('userLocation').get()
-	})
-}
-
-function stopRecording(lastLocation) {//shouldn't save
-	console.log('Stopped recording on #' + lastLocation);
-	save();
-	// path = [];
-}
-
-function save() {//change this to update
-	console.log('Saving................')
-	r.connect({host: 'localhost', port: 28015, db: 'vedi'}, function(err, conn) {
-		if(err) throw err;
-		connection = conn;
-
-		r.table('userLocation').run(conn, (err, cursor) => {
-			if (err) throw err;
-			cursor.toArray((err, result) => {
-				if (err) throw err;
-				// if (result.length > 0) {
-				console.log('result ' + result[0])
-				pathInsert(result.length);
-				// }
-			})
-		})
-	})
 };
 
 function pathInsert(pathNumber) {
