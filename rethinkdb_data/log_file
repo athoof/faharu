@@ -67,3 +67,19 @@
 2017-08-20T09:59:31.392134180 0.425099s notice: Listening on driver addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1816
 2017-08-20T09:59:31.467047303 0.500012s notice: Listening on http addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1816
 2017-08-20T09:59:31.467055142 0.500019s notice: Server ready, "v12780_7jx" be87918c-ed50-4834-b6a1-da78c8ab8915
+2017-08-27T19:54:57.544038793 0.421607s notice: Running rethinkdb 2.3.6~0xenial (GCC 5.3.1)...
+2017-08-27T19:54:57.548397846 0.425968s notice: Running on Linux 4.4.67-1-pve x86_64
+2017-08-27T19:54:57.548450347 0.426018s notice: Loading data from directory /root/faharu/rethinkdb_data
+2017-08-27T19:54:57.823842524 0.701411s info: Automatically using cache size of 100 MB
+2017-08-27T19:54:57.843893022 0.721462s warn: Cache size does not leave much memory for server and query overhead (available memory: 904 MB).
+2017-08-27T19:54:57.843904517 0.721473s warn: Cache size is very low and may impact performance.
+2017-08-27T19:54:57.939417309 0.816986s notice: Listening for intracluster connections on port 29015
+2017-08-27T19:54:57.960601412 0.838170s notice: Listening for client driver connections on port 28015
+2017-08-27T19:54:57.960922789 0.838491s notice: Listening for administrative HTTP connections on port 8080
+2017-08-27T19:54:58.045280562 0.922849s notice: Listening on cluster addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1851
+2017-08-27T19:54:58.120223693 0.997792s notice: Listening on driver addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1851
+2017-08-27T19:54:58.198899830 1.076468s notice: Listening on http addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1851
+2017-08-27T19:54:58.198986649 1.076555s notice: Server ready, "v12780_7jx" be87918c-ed50-4834-b6a1-da78c8ab8915
+2017-08-27T20:06:27.475899284 690.353468s info: Table c6f260dc-4fa4-4eef-9169-36300112da0f: Starting a new Raft election for term 1.
+2017-08-27T20:06:27.476317119 690.353885s info: Table c6f260dc-4fa4-4eef-9169-36300112da0f: Added replica on this server.
+2017-08-27T20:06:27.492146764 690.369715s info: Table c6f260dc-4fa4-4eef-9169-36300112da0f: This server is Raft leader for term 1. Latest log index is 0.

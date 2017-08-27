@@ -4,14 +4,18 @@ block content
 	h1= Kandu
 	div.boat
 		table
-			tr
-				td PathNumber
-				td NodeNumber
-				td Latitude
-				td Longitude
+
 			each record in data
 				tr
-					td= record.pathNumber
-					td= record.path.nodeNumber
-					td= record.path.location.latitude
-					td= record.path.location.longitude
+					td= record.user.name
+					td Latitude
+					td Longitude
+					td Timestamp
+				each node in record.path
+					tr
+						td= node.nodeNumber
+						td= node.latitude
+						td= node.longitude
+						td= node.timestamp
+					//- td= JSON.stringify(record.path)
+					
