@@ -6,7 +6,18 @@ var connection;
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('map', { title: 'Map' });
+	r.connect({db: 'vedi'}, (err, conn) => {
+		if (err) throw err;
+		r.table('userLocation').run(conn, (err, cursor) => {
+			if (err) throw err;
+			// console.log('whoops');
+			cursor.each((err, item) => {
+				if (err) throw err;
+				console.log(item);
+			})
+		})
+	});
+  	res.render('map', { title: 'Map' });
 });
 
 module.exports = router;

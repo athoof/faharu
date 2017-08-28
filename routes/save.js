@@ -53,30 +53,36 @@ class Node {
 	}
 }
 
+var tables = ['userLocation', 'user']
+
 router.get ('/drop', (req, res) => {
 	r.connect({db: 'vedi'}, (err, conn) => {
 		r.db('vedi').tableList().run(conn, (err, res) => {
 			if (err) throw err;
-			if (!_.find(res, ['userLocation'])) {
-				console.log('Exists. Dropping...')
-				r.db('vedi').tableDrop('userLocation').run(conn, () => {
-					console.log('Dropped \'userLocation\' in Vedi');
-					r.db('vedi').tableCreate('userLocation').run(conn, (err, res) => {
-						if (err) throw err;
-						console.log(res);
+			if (!_.find(res, tables)) {
+				console.log('Exists. Dropping...');
+				tables.forEach((table) => {
+					r.db('vedi').tableDrop(table).run(conn, () => {
+						console.log('Dropped \'' + table + '\', in Vedi');
+						r.db('vedi').tableCreate(table).run(conn, (err, res) => {
+							if (err) throw err;
+							console.log(res);
+						})
 					})
-				});
+				})
 			} else {
 				console.log('Does not exist, creating...')
-				r.db('vedi').tableCreate('userLocation').run(conn, (err, res) => {
-					if (err) throw err;
-					console.log(res);
-				})
-			}
+				tables.forEach((table) => {
+					r.db('vedi').tableCreate(table).run(conn, (err, res) => {
+							if (err) throw err;
+							console.log(res);
+						})
+					})
+				}
+			})
 		})
 		res.send('ok')
 	})
-})
 
 router.post('/updatepath', (req, res) => {
 	var recording = req.body.recording;
@@ -142,16 +148,45 @@ router.post('/updatepath', (req, res) => {
 	}
 });
 
+function checkUser(node) {
+	r.connect({db: 'vedi'}, (err, conn) => {
+		if (err) throw err;
+		r.table('user')('id').contains(node.user.id).run(conn, (err, res) => {
+			if (err) throw err;
+			if (res == true) {
+				console.log(res, 'User exists');
+				r.table('user').get(node.user.id).update({
+					lastLocation: {
+						latitude: node.latitude,
+						longitude: node.longitude,
+						timestamp: node.timestamp,
+					}
+				}).run(conn, (err, res) => {
+					if (err) throw err;
+					console.log(res, 'Last known location updated');
+				});
+			} else {
+				console.log('User does not exist', res);
+				r.table('user').insert(node.user).run(conn, (err, r) => {
+					if (err) throw err;
+					console.log(r);
+				})
+			}
+		})
+	})
+}
 
 function save(node) {
 	console.log('Saving #', node.nodeNumber)
 	if (node.recording == true) {
 		console.log('Adding node...');
+		console.log('User table check');
+		checkUser(node);
 		r.connect({db: 'vedi'}, (err, conn) => {
 			if (err) throw err;
 			if(currentID == null) {
 				r.table('userLocation').insert({
-					user: node.user,
+					user: node.user.id,
 					path: [{
 						nodeNumber: node.nodeNumber,
 						latitude: node.latitude,
