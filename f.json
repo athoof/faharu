@@ -1,0 +1,7 @@
+{
+	// Comments are allowed~
+	"uid": "faharu",
+	"append": true,
+	"watch": true,
+	"script": "app.js" 
+}

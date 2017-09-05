@@ -83,3 +83,172 @@
 2017-08-27T20:06:27.475899284 690.353468s info: Table c6f260dc-4fa4-4eef-9169-36300112da0f: Starting a new Raft election for term 1.
 2017-08-27T20:06:27.476317119 690.353885s info: Table c6f260dc-4fa4-4eef-9169-36300112da0f: Added replica on this server.
 2017-08-27T20:06:27.492146764 690.369715s info: Table c6f260dc-4fa4-4eef-9169-36300112da0f: This server is Raft leader for term 1. Latest log index is 0.
+2017-08-28T18:30:43.976307853 0.307182s notice: Running rethinkdb 2.3.6~0xenial (GCC 5.3.1)...
+2017-08-28T18:30:43.979311875 0.310188s notice: Running on Linux 4.4.67-1-pve x86_64
+2017-08-28T18:30:43.980318327 0.311192s notice: Loading data from directory /root/faharu/rethinkdb_data
+2017-08-28T18:30:44.011013125 0.341888s info: Automatically using cache size of 100 MB
+2017-08-28T18:30:44.012447816 0.343322s warn: Cache size does not leave much memory for server and query overhead (available memory: 892 MB).
+2017-08-28T18:30:44.012453449 0.343327s warn: Cache size is very low and may impact performance.
+2017-08-28T18:30:44.088398029 0.419272s notice: Listening for intracluster connections on port 29015
+2017-08-28T18:30:44.123530985 0.454405s notice: Listening for client driver connections on port 28015
+2017-08-28T18:30:44.123959860 0.454834s notice: Listening for administrative HTTP connections on port 8080
+2017-08-28T18:30:44.206842812 0.537717s notice: Listening on cluster addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1851
+2017-08-28T18:30:44.286643912 0.617518s notice: Listening on driver addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1851
+2017-08-28T18:30:44.328099880 0.658974s notice: Listening on http addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1851
+2017-08-28T18:30:44.330608022 0.661482s notice: Server ready, "v12780_7jx" be87918c-ed50-4834-b6a1-da78c8ab8915
+2017-08-28T18:30:45.509880147 1.840754s info: Table c6f260dc-4fa4-4eef-9169-36300112da0f: Starting a new Raft election for term 2.
+2017-08-28T18:30:45.511585116 1.842459s info: Table c6f260dc-4fa4-4eef-9169-36300112da0f: This server is Raft leader for term 2. Latest log index is 2.
+2017-08-28T18:35:20.370761093 276.701636s notice: Removing file /root/faharu/rethinkdb_data/c6f260dc-4fa4-4eef-9169-36300112da0f
+2017-08-28T18:35:20.370770241 276.701644s info: Table c6f260dc-4fa4-4eef-9169-36300112da0f: Deleted the table.
+2017-08-28T18:35:20.422610126 276.753484s info: Table d41f32b2-3279-49ac-b727-26c9d57fd846: Starting a new Raft election for term 1.
+2017-08-28T18:35:20.423030899 276.753905s info: Table d41f32b2-3279-49ac-b727-26c9d57fd846: Added replica on this server.
+2017-08-28T18:35:20.424349353 276.755224s info: Table d41f32b2-3279-49ac-b727-26c9d57fd846: This server is Raft leader for term 1. Latest log index is 0.
+2017-08-28T18:35:20.501092980 276.831968s info: Table b3084bb2-24cd-4c61-aa58-4bf32f36d406: Starting a new Raft election for term 1.
+2017-08-28T18:35:20.501509295 276.832383s info: Table b3084bb2-24cd-4c61-aa58-4bf32f36d406: Added replica on this server.
+2017-08-28T18:35:20.504436452 276.835311s info: Table b3084bb2-24cd-4c61-aa58-4bf32f36d406: This server is Raft leader for term 1. Latest log index is 0.
+2017-08-28T18:35:27.953310285 284.284185s notice: Removing file /root/faharu/rethinkdb_data/b3084bb2-24cd-4c61-aa58-4bf32f36d406
+2017-08-28T18:35:27.953320745 284.284195s info: Table b3084bb2-24cd-4c61-aa58-4bf32f36d406: Deleted the table.
+2017-08-28T18:35:27.969904217 284.300779s notice: Removing file /root/faharu/rethinkdb_data/d41f32b2-3279-49ac-b727-26c9d57fd846
+2017-08-28T18:35:27.969912495 284.300787s info: Table d41f32b2-3279-49ac-b727-26c9d57fd846: Deleted the table.
+2017-08-28T18:35:27.994156834 284.325031s info: Table 3fb2632c-c9f6-4e31-af0c-9f7aea4feed7: Starting a new Raft election for term 1.
+2017-08-28T18:35:27.994522635 284.325397s info: Table 3fb2632c-c9f6-4e31-af0c-9f7aea4feed7: Added replica on this server.
+2017-08-28T18:35:27.995906504 284.326781s info: Table 3fb2632c-c9f6-4e31-af0c-9f7aea4feed7: This server is Raft leader for term 1. Latest log index is 0.
+2017-08-28T18:35:28.010622422 284.341497s info: Table fdccfa34-1f0f-40bf-8c58-d3c31a70a4d0: Starting a new Raft election for term 1.
+2017-08-28T18:35:28.010945360 284.341820s info: Table fdccfa34-1f0f-40bf-8c58-d3c31a70a4d0: Added replica on this server.
+2017-08-28T18:35:28.015372447 284.346247s info: Table fdccfa34-1f0f-40bf-8c58-d3c31a70a4d0: This server is Raft leader for term 1. Latest log index is 0.
+2017-08-29T13:57:30.044053013 0.395972s notice: Running rethinkdb 2.3.6~0xenial (GCC 5.3.1)...
+2017-08-29T13:57:30.048731405 0.400651s notice: Running on Linux 4.4.67-1-pve x86_64
+2017-08-29T13:57:30.048767052 0.400685s notice: Loading data from directory /root/faharu/rethinkdb_data
+2017-08-29T13:57:30.414624940 0.766544s info: Automatically using cache size of 100 MB
+2017-08-29T13:57:30.417873588 0.769792s warn: Cache size does not leave much memory for server and query overhead (available memory: 896 MB).
+2017-08-29T13:57:30.417880111 0.769798s warn: Cache size is very low and may impact performance.
+2017-08-29T13:57:30.515643804 0.867563s notice: Listening for intracluster connections on port 29015
+2017-08-29T13:57:30.797208240 1.149127s notice: Listening for client driver connections on port 28015
+2017-08-29T13:57:30.797488064 1.149407s notice: Listening for administrative HTTP connections on port 8080
+2017-08-29T13:57:30.872111222 1.224030s notice: Listening on cluster addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1851
+2017-08-29T13:57:30.947405873 1.299325s notice: Listening on driver addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1851
+2017-08-29T13:57:31.022352648 1.374271s notice: Listening on http addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1851
+2017-08-29T13:57:31.022435582 1.374354s notice: Server ready, "v12780_7jx" be87918c-ed50-4834-b6a1-da78c8ab8915
+2017-08-29T13:57:31.948612030 2.300531s info: Table fdccfa34-1f0f-40bf-8c58-d3c31a70a4d0: Starting a new Raft election for term 2.
+2017-08-29T13:57:31.953186947 2.305106s info: Table fdccfa34-1f0f-40bf-8c58-d3c31a70a4d0: This server is Raft leader for term 2. Latest log index is 3.
+2017-08-29T13:57:32.666070342 3.017989s info: Table 3fb2632c-c9f6-4e31-af0c-9f7aea4feed7: Starting a new Raft election for term 2.
+2017-08-29T13:57:32.667391913 3.019310s info: Table 3fb2632c-c9f6-4e31-af0c-9f7aea4feed7: This server is Raft leader for term 2. Latest log index is 3.
+2017-08-29T13:58:26.990771070 57.342690s notice: Someone asked for the nonwhitelisted file "/manager/html".  If this should be accessible, add it to the static web assets.
+2017-09-05T09:36:31.544179820 0.803840s notice: Running rethinkdb 2.3.6~0xenial (GCC 5.3.1)...
+2017-09-05T09:36:31.550002982 0.809666s notice: Running on Linux 4.4.67-1-pve x86_64
+2017-09-05T09:36:31.550060730 0.809721s notice: Loading data from directory /root/faharu/rethinkdb_data
+2017-09-05T09:36:31.792143918 1.051805s info: Automatically using cache size of 100 MB
+2017-09-05T09:36:31.819129549 1.078790s warn: Cache size does not leave much memory for server and query overhead (available memory: 862 MB).
+2017-09-05T09:36:31.819137367 1.078798s warn: Cache size is very low and may impact performance.
+2017-09-05T09:36:31.839069167 1.098730s notice: Listening for intracluster connections on port 29015
+2017-09-05T09:36:32.044674155 1.304335s notice: Listening for client driver connections on port 28015
+2017-09-05T09:36:32.044998206 1.304659s notice: Listening for administrative HTTP connections on port 8080
+2017-09-05T09:36:32.045001427 1.304661s notice: Listening on cluster addresses: 127.0.0.1, ::1
+2017-09-05T09:36:32.045009299 1.304669s notice: Listening on driver addresses: 127.0.0.1, ::1
+2017-09-05T09:36:32.045011454 1.304671s notice: Listening on http addresses: 127.0.0.1, ::1
+2017-09-05T09:36:32.045013547 1.304674s notice: To fully expose RethinkDB on the network, bind to all addresses by running rethinkdb with the `--bind all` command line option.
+2017-09-05T09:36:32.045019015 1.304679s notice: Server ready, "v12780_7jx" be87918c-ed50-4834-b6a1-da78c8ab8915
+2017-09-05T09:36:33.354886036 2.614546s info: Table fdccfa34-1f0f-40bf-8c58-d3c31a70a4d0: Starting a new Raft election for term 3.
+2017-09-05T09:36:33.360615119 2.620276s info: Table fdccfa34-1f0f-40bf-8c58-d3c31a70a4d0: This server is Raft leader for term 3. Latest log index is 6.
+2017-09-05T09:36:33.909701075 3.169362s info: Table 3fb2632c-c9f6-4e31-af0c-9f7aea4feed7: Starting a new Raft election for term 3.
+2017-09-05T09:36:33.914768908 3.174429s info: Table 3fb2632c-c9f6-4e31-af0c-9f7aea4feed7: This server is Raft leader for term 3. Latest log index is 6.
+2017-09-05T09:36:35.010117857 4.269778s notice: Server got SIGINT from pid 0, uid 0; shutting down...
+2017-09-05T09:36:35.010487856 4.270148s notice: Shutting down client connections...
+2017-09-05T09:36:35.010628862 4.270289s notice: All client connections closed.
+2017-09-05T09:36:35.010674135 4.270334s notice: Shutting down storage engine... (This may take a while if you had a lot of unflushed data in the writeback cache.)
+2017-09-05T09:36:35.019652471 4.279313s notice: Storage engine shut down.
+2017-09-05T09:49:37.244353767 0.428818s notice: Running rethinkdb 2.3.6~0xenial (GCC 5.3.1)...
+2017-09-05T09:49:37.247299493 0.431765s notice: Running on Linux 4.4.67-1-pve x86_64
+2017-09-05T09:49:37.247357977 0.431822s notice: Loading data from directory /root/faharu/rethinkdb_data
+2017-09-05T09:49:37.349329323 0.533794s info: Automatically using cache size of 100 MB
+2017-09-05T09:49:37.350484058 0.534948s warn: Cache size does not leave much memory for server and query overhead (available memory: 763 MB).
+2017-09-05T09:49:37.350489710 0.534954s warn: Cache size is very low and may impact performance.
+2017-09-05T09:49:37.520020773 0.704485s notice: Listening for intracluster connections on port 29015
+2017-09-05T09:49:37.584444755 0.768909s notice: Listening for client driver connections on port 28015
+2017-09-05T09:49:37.586288769 0.770753s notice: Listening for administrative HTTP connections on port 8080
+2017-09-05T09:49:37.754898834 0.939363s notice: Listening on cluster addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1851
+2017-09-05T09:49:37.830130888 1.014595s notice: Listening on driver addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1851
+2017-09-05T09:49:37.905137655 1.089602s notice: Listening on http addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1851
+2017-09-05T09:49:37.905212827 1.089677s notice: Server ready, "v12780_7jx" be87918c-ed50-4834-b6a1-da78c8ab8915
+2017-09-05T09:49:38.648022683 1.832487s info: Table fdccfa34-1f0f-40bf-8c58-d3c31a70a4d0: Starting a new Raft election for term 4.
+2017-09-05T09:49:38.649274036 1.833738s info: Table fdccfa34-1f0f-40bf-8c58-d3c31a70a4d0: This server is Raft leader for term 4. Latest log index is 9.
+2017-09-05T09:49:39.263365608 2.447830s info: Table 3fb2632c-c9f6-4e31-af0c-9f7aea4feed7: Starting a new Raft election for term 4.
+2017-09-05T09:49:39.264701595 2.449166s info: Table 3fb2632c-c9f6-4e31-af0c-9f7aea4feed7: This server is Raft leader for term 4. Latest log index is 9.
+2017-09-05T10:44:32.863264260 0.399081s notice: Running rethinkdb 2.3.6~0xenial (GCC 5.3.1)...
+2017-09-05T10:44:32.866202158 0.402021s notice: Running on Linux 4.4.67-1-pve x86_64
+2017-09-05T10:44:32.866239061 0.402056s notice: Loading data from directory /root/faharu/rethinkdb_data
+2017-09-05T10:44:33.056829398 0.592647s info: Automatically using cache size of 100 MB
+2017-09-05T10:44:33.066847077 0.602665s warn: Cache size does not leave much memory for server and query overhead (available memory: 737 MB).
+2017-09-05T10:44:33.066854512 0.602671s warn: Cache size is very low and may impact performance.
+2017-09-05T10:44:33.219856137 0.755673s notice: Listening for intracluster connections on port 29015
+2017-09-05T10:44:33.268766477 0.804584s notice: Listening for client driver connections on port 28015
+2017-09-05T10:44:33.269129046 0.804946s notice: Listening for administrative HTTP connections on port 8080
+2017-09-05T10:44:33.444645630 0.980463s notice: Listening on cluster addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1851
+2017-09-05T10:44:33.483051048 1.018868s notice: Listening on driver addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1851
+2017-09-05T10:44:33.526154446 1.061971s notice: Listening on http addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1851
+2017-09-05T10:44:33.526231416 1.062048s notice: Server ready, "v12780_7jx" be87918c-ed50-4834-b6a1-da78c8ab8915
+2017-09-05T10:44:34.329385751 1.865203s info: Table 3fb2632c-c9f6-4e31-af0c-9f7aea4feed7: Starting a new Raft election for term 5.
+2017-09-05T10:44:34.333969073 1.869786s info: Table 3fb2632c-c9f6-4e31-af0c-9f7aea4feed7: This server is Raft leader for term 5. Latest log index is 12.
+2017-09-05T10:44:34.464880654 2.000698s info: Table fdccfa34-1f0f-40bf-8c58-d3c31a70a4d0: Starting a new Raft election for term 5.
+2017-09-05T10:44:34.469460938 2.005278s info: Table fdccfa34-1f0f-40bf-8c58-d3c31a70a4d0: This server is Raft leader for term 5. Latest log index is 12.
+2017-09-05T10:44:44.442847422 11.978665s notice: Server got SIGINT from pid 0, uid 0; shutting down...
+2017-09-05T10:44:44.443235075 11.979052s notice: Shutting down client connections...
+2017-09-05T10:44:44.443318660 11.979136s notice: All client connections closed.
+2017-09-05T10:44:44.443390198 11.979207s notice: Shutting down storage engine... (This may take a while if you had a lot of unflushed data in the writeback cache.)
+2017-09-05T10:44:44.447392461 11.983209s notice: Storage engine shut down.
+2017-09-05T10:45:26.247207893 0.303539s notice: Running rethinkdb 2.3.6~0xenial (GCC 5.3.1)...
+2017-09-05T10:45:26.279483917 0.335818s notice: Running on Linux 4.4.67-1-pve x86_64
+2017-09-05T10:45:26.279554489 0.335885s notice: Loading data from directory /root/faharu/rethinkdb_data
+2017-09-05T10:45:26.443152530 0.499483s info: Automatically using cache size of 100 MB
+2017-09-05T10:45:26.453357426 0.509688s warn: Cache size does not leave much memory for server and query overhead (available memory: 730 MB).
+2017-09-05T10:45:26.453364465 0.509695s warn: Cache size is very low and may impact performance.
+2017-09-05T10:45:26.622129180 0.678460s notice: Listening for intracluster connections on port 29015
+2017-09-05T10:45:26.693254765 0.749586s notice: Listening for client driver connections on port 28015
+2017-09-05T10:45:26.693808546 0.750139s notice: Listening for administrative HTTP connections on port 8080
+2017-09-05T10:45:26.745358726 0.801690s notice: Listening on cluster addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1851
+2017-09-05T10:45:26.783943535 0.840274s notice: Listening on driver addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1851
+2017-09-05T10:45:26.785839287 0.842170s notice: Listening on http addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1851
+2017-09-05T10:45:26.785846862 0.842177s notice: Server ready, "v12780_7jx" be87918c-ed50-4834-b6a1-da78c8ab8915
+2017-09-05T10:45:28.065696775 2.122027s info: Table fdccfa34-1f0f-40bf-8c58-d3c31a70a4d0: Starting a new Raft election for term 6.
+2017-09-05T10:45:28.067661783 2.123992s info: Table fdccfa34-1f0f-40bf-8c58-d3c31a70a4d0: This server is Raft leader for term 6. Latest log index is 15.
+2017-09-05T10:45:28.143066413 2.199397s info: Table 3fb2632c-c9f6-4e31-af0c-9f7aea4feed7: Starting a new Raft election for term 6.
+2017-09-05T10:45:28.163829071 2.220160s info: Table 3fb2632c-c9f6-4e31-af0c-9f7aea4feed7: This server is Raft leader for term 6. Latest log index is 15.
+2017-09-05T10:46:04.481686567 38.538017s notice: Server got SIGINT from pid 0, uid 0; shutting down...
+2017-09-05T10:46:04.542956140 38.599287s notice: Shutting down client connections...
+2017-09-05T10:46:04.547338219 38.603669s notice: All client connections closed.
+2017-09-05T10:46:04.547390777 38.603721s notice: Shutting down storage engine... (This may take a while if you had a lot of unflushed data in the writeback cache.)
+2017-09-05T10:46:04.555951011 38.612282s notice: Storage engine shut down.
+2017-09-05T11:06:10.644042680 0.484708s notice: Running rethinkdb 2.3.6~0xenial (GCC 5.3.1)...
+2017-09-05T11:06:10.647209179 0.487876s notice: Running on Linux 4.4.67-1-pve x86_64
+2017-09-05T11:06:10.647270145 0.487935s notice: Loading data from directory /root/faharu/rethinkdb_data
+2017-09-05T11:06:10.795529307 0.636195s info: Automatically using cache size of 100 MB
+2017-09-05T11:06:10.796717676 0.637383s warn: Cache size does not leave much memory for server and query overhead (available memory: 751 MB).
+2017-09-05T11:06:10.796723566 0.637388s warn: Cache size is very low and may impact performance.
+2017-09-05T11:06:11.357954757 1.198620s notice: Listening for intracluster connections on port 29015
+2017-09-05T11:06:11.413039031 1.253705s notice: Listening for client driver connections on port 28015
+2017-09-05T11:06:11.413760130 1.254425s notice: Listening for administrative HTTP connections on port 8080
+2017-09-05T11:06:11.493123354 1.333789s notice: Listening on cluster addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1851
+2017-09-05T11:06:11.568636042 1.409302s notice: Listening on driver addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1851
+2017-09-05T11:06:11.645795974 1.486461s notice: Listening on http addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1851
+2017-09-05T11:06:11.646039195 1.486704s notice: Server ready, "v12780_7jx" be87918c-ed50-4834-b6a1-da78c8ab8915
+2017-09-05T11:06:12.673656120 2.514321s info: Table 3fb2632c-c9f6-4e31-af0c-9f7aea4feed7: Starting a new Raft election for term 7.
+2017-09-05T11:06:12.675620969 2.516286s info: Table 3fb2632c-c9f6-4e31-af0c-9f7aea4feed7: This server is Raft leader for term 7. Latest log index is 18.
+2017-09-05T11:06:12.840951816 2.681617s info: Table fdccfa34-1f0f-40bf-8c58-d3c31a70a4d0: Starting a new Raft election for term 7.
+2017-09-05T11:06:12.842712904 2.683378s info: Table fdccfa34-1f0f-40bf-8c58-d3c31a70a4d0: This server is Raft leader for term 7. Latest log index is 18.
+2017-09-05T11:41:55.744240230 0.460055s notice: Running rethinkdb 2.3.6~0xenial (GCC 5.3.1)...
+2017-09-05T11:41:55.747638118 0.463454s notice: Running on Linux 4.4.67-1-pve x86_64
+2017-09-05T11:41:55.747697852 0.463512s notice: Loading data from directory /root/faharu/rethinkdb_data
+2017-09-05T11:41:55.870093810 0.585909s info: Automatically using cache size of 100 MB
+2017-09-05T11:41:55.871700542 0.587515s warn: Cache size does not leave much memory for server and query overhead (available memory: 709 MB).
+2017-09-05T11:41:55.871706603 0.587521s warn: Cache size is very low and may impact performance.
+2017-09-05T11:41:55.947913192 0.663728s notice: Listening for intracluster connections on port 29015
+2017-09-05T11:41:55.998512252 0.714327s notice: Listening for client driver connections on port 28015
+2017-09-05T11:41:55.998908581 0.714723s notice: Listening for administrative HTTP connections on port 8080
+2017-09-05T11:41:56.080425815 0.796240s notice: Listening on cluster addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1851
+2017-09-05T11:41:56.156629422 0.872444s notice: Listening on driver addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1851
+2017-09-05T11:41:56.232102700 0.947917s notice: Listening on http addresses: 127.0.0.1, 94.156.189.222, ::1, 2a07:5741:0:90d::1, fe80::a845:75ff:fe60:951d%1851
+2017-09-05T11:41:56.232332513 0.948147s notice: Server ready, "v12780_7jx" be87918c-ed50-4834-b6a1-da78c8ab8915
+2017-09-05T11:41:57.176165011 1.891979s info: Table 3fb2632c-c9f6-4e31-af0c-9f7aea4feed7: Starting a new Raft election for term 8.
+2017-09-05T11:41:57.178352211 1.894167s info: Table 3fb2632c-c9f6-4e31-af0c-9f7aea4feed7: This server is Raft leader for term 8. Latest log index is 21.
+2017-09-05T11:41:57.772200393 2.488015s info: Table fdccfa34-1f0f-40bf-8c58-d3c31a70a4d0: Starting a new Raft election for term 8.
+2017-09-05T11:41:57.773638048 2.489452s info: Table fdccfa34-1f0f-40bf-8c58-d3c31a70a4d0: This server is Raft leader for term 8. Latest log index is 21.

@@ -2,18 +2,34 @@ extends layout
 
 block content
 	h1= title
-		div#map(style="height: 100vh; width: 100%")
-			script.
-				function initMap() {
-				  var maldives = {lat: 4.178044, lng: 73.505828};
-				  var map = new google.maps.Map(document.getElementById('map'), {
-				    zoom: 9,
-				    center: maldives
-				  });
-				  var marker = new google.maps.Marker({
-				    position: maldives,
-				    map: map
-				  });
-				}
+	//- p= users
 
-			script(async, defer, src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC0g37AIh4J1U1YeO_cN9g0gxnv6YnreYQ&callback=initMap")
+	div#map(style="height: 100vh; width: 100%")
+		script.
+			function initMap() {
+			  var maldives = {lat: 4.178044, lng: 73.505828};
+			  var markerArray = [];
+
+			  var map = new google.maps.Map(document.getElementById('map'), {
+			    zoom: 9,
+			    center: maldives
+			  });
+			  
+			  var users = !{JSON.stringify(users).replace(/<\//g, '<\\/')};
+			  console.log(users[0])
+			  users.forEach((user) => {
+			  	console.log(user.lastLocation.latitude);
+			  	var latLng = new google.maps.LatLng(user.lastLocation.latitude, user.lastLocation.longitude);
+				var marker = new google.maps.Marker({
+					position: latLng,
+					map: map
+				});
+			  });
+
+			  //- var marker = new google.maps.Marker({
+			  //-   position: {lat: x.lastLocation.latitude, lng: 73.505828},
+			  //-   map: map
+			  //- });
+			}
+
+		script(async, defer, src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC0g37AIh4J1U1YeO_cN9g0gxnv6YnreYQ&callback=initMap")
