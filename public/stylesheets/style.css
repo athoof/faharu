@@ -4,14 +4,33 @@ body {
 		font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
+#download {
+	-webkit-box-shadow: 0px 4px 19px -6px rgba(0,0,0,0.36); 
+	-moz-box-shadow: 0px 4px 19px -6px rgba(0,0,0,0.36); 
+	box-shadow: 0px 4px 19px -6px rgba(0,0,0,0.36);
+	margin: 0 auto;
+	text-align: center;
+	width: 120px;
+	height: 45px;
+	line-height: 45px;
+	vertical-align: middle;
+	padding: 5px;
+	text-shadow: 0 1px 1px rgba(0,0,0,0.36);
+	background-color: white;
+	border-radius: 8px;
+}
+
 a {
-	color: #00B7FF;
+	text-align: center;
+	
+	color: #00122d;
 }
 
 .boat {
+	text-align: center;
 	margin-top: 20vh;
-	height: 500px;
-	width: 500px;
+	height: 400px;
+	width: 480px;
 	margin: auto;
 }
 

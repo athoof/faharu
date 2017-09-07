@@ -11,15 +11,13 @@ router.get('/', (req, res) => {
 			if (err) throw err;
 			cursor.toArray((err, result) => {
 				if (err) throw err;
-				// console.log(JSON.stringify(result, null, 2));
-				x = result;
-				// console.log(JSON.stringify(x));
-				y = _.orderBy(result, ['nodeNumber'], ['asc', 'desc'])
-				console.log(JSON.stringify(y, null, 2));
+				res.render('display', {data: result});
+				// y = _.orderBy(result, ['nodeNumber'], ['asc', 'desc'])
+				// console.log(JSON.stringify(y, null, 2));
 			});
 		});
 	});
-	res.render('display', {data: y, data2: y});
+	// res.render('display', {data: null});
 });
 
 

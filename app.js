@@ -10,7 +10,7 @@ var users = require('./routes/users');
 var connectdb = require('./routes/connectdb');
 var save = require('./routes/save');
 var display = require('./routes/display');
-
+var map = require('./routes/map');
 
 
 var app = express();
@@ -32,6 +32,7 @@ app.use('/users', users);
 app.use('/connectdb', connectdb);
 app.use('/save', save);
 app.use('/display', display);
+app.use('/map', map);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
