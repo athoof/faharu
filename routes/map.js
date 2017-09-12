@@ -5,46 +5,34 @@ var bodyParser = require('body-parser');
 var connection;
 var _ = require('lodash');
 
+/* GET home page. */
+router.get('/', (req, res) => {
+	getUserList(null, (err, userList) => {
+		if (err) throw err;
+		console.log('UserList::: ', userList)
+		res.render('map', { title: 'Map: Select a user.', paths: null, userList: userList, selectedUser: null });
+	});
+});
+
+
 router.get('/:user', (req, res) => {
 	getUserList(null, (err, userList) => {
 		if (err) throw err;
 		if (typeof req.params.user !== 'undefined') {
 			getPaths(req.params.user, (err, paths) => {
 				if (err) throw err;
-				console.log('Listing paths for user: '+ req.params.user + ' ' + paths)
+				// console.log('Userlist at :user', JSON.stringify(userList))
+				// console.log('Listing paths for user: '+ req.params.user + ' ' + paths)
 				let selectedUser = _.find(userList, { 'id' : req.params.user })
-				res.render('map', {title: 'Map: Viewing ' + selectedUser.name, paths: paths, userList: userList, selectedUser: selectedUser });
+				res.render('map', {title: 'Map: Viewing paths for ' + selectedUser.name, paths: paths, userList: userList, selectedUser: selectedUser });
 			});
-		} else { console.log('FAILED TO LOAD PATHS') }
+		} else { 
+			console.log('FAILED TO LOAD PATHS');
+			res.render('map', { title: 'Map: Incorrect user. Select a user from list: ', paths: null, userList: userList, selectedUser: null });
+		}
 	})
 }) 
 
-
-/* GET home page. */
-router.get('/', (req, res, next) => {
-	getUserList(null, (err, userList) => {
-		if (err) throw err;
-		console.log('Select a user: ', userList)
-		res.render('map', { title: 'Map: Select a user.', paths: null, userList: userList, selectedUser: null })
-	});
-/*	r.connect({db: 'vedi'}, (err, conn) => {
-		if (err) throw err;
-		r.table('user').run(conn, (err, result) => {
-			if (err) throw err;
-			if (result != null && typeof result != 'undefined') {
-				console.log('Loading users and their last known locations');
-				result.toArray((err, r) => {
-					if (err) throw err;
-					// console.log(r);
-					res.render('map', {title: 'Map', users: r });
-				})
-			} else {
-				console.log('No users');
-  				res.render('map', { title: 'Map'});
-			}
-		});
-	});*/
-});
 
 function getPaths(user, callback) {
 	r.connect({db: 'vedi'}, (err, conn) => {
@@ -64,20 +52,16 @@ function getPaths(user, callback) {
 
 function getUserList(searchparam, callback) {
 	// searchparam = req.body.searchparam;
+	var userList = [];
 	r.connect({db: 'vedi'}, (err, conn) => {
-		if (err) callback(err);
-		r.table('user').run(conn, (err, result) => {
-			if (err) callback(err);
-			var userList = []
-			// console.log(result);
-			result.each((err, user) => {
-				// console.log(user);
-				userList.push({name: user.name, id: user.id, lastLocation: user.lastLocation});
-				if (typeof searchparam !== 'undefined' && searchparam !== null ) {
-					userList = _.filter(userList, [searchparam]);
-				}
-				callback(null, userList);
+		if (err) throw err;
+		r.table('user').pluck('id', 'name', 'lastLocation').run(conn, (err, result) => {
+			if (err) throw err;
+			result.toArray((err, result) => {
+				if (err) throw err;
+				callback(null, result)
 			})
+
 		})
 	})
 }
