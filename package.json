@@ -15,6 +15,7 @@
     "feathers-cli": "^2.3.5",
     "generator-gruntfile": "^0.1.4",
     "grunt": "^1.0.1",
+    "jquery": "^3.2.1",
     "lodash": "^4.17.4",
     "morgan": "~1.8.1",
     "nodemon": "^1.12.0",

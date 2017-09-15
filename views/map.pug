@@ -15,86 +15,113 @@ block content
 	div#map(style="height: 100vh; width: 100%")
 		script.
 			function initMap() {
-			var maldives = {lat: 4.178044, lng: 73.505828};
-			var center = maldives;
-			if (selectedUser !== null) {
-				console.log('selectedUser: ', selectedUser)
-				var selectedUser = !{JSON.stringify(selectedUser).replace(/<\//g, '<\\/')};
-				center = (selectedUser) ? {lat: selectedUser.lastLocation.latitude, lng: selectedUser.lastLocation.longitude} : center
-			}
+				var maldives = {lat: 4.178044, lng: 73.505828};
+				var center = maldives;
+				if (selectedUser !== null) {
+					console.log('selectedUser: ', selectedUser)
+					var selectedUser = !{JSON.stringify(selectedUser).replace(/<\//g, '<\\/')};
+					center = (selectedUser) ? {lat: selectedUser.lastLocation.latitude, lng: selectedUser.lastLocation.longitude} : center
+				}
 
-			//- var markerArray = [];
-			console.log('Centered on: ', center)
-			
-			var map = new google.maps.Map(document.getElementById('map'), {
-				zoom: 13,
-				center: center
-			});
-
-			//- poly = new google.maps.Polyline({
-			//- 	strokeColor: 'blue',
-			//- 	strokeOpacity: 0.8,
-			//- 	strokeWeight: 2
-			//- });
-			//- poly.setMap(map);
-
-			var userList = !{JSON.stringify(userList).replace(/<\//g, '<\\/')};
-			var paths = !{JSON.stringify(paths).replace(/<\//g, '<\\/')};
-
-			if(paths !== null){
-				console.log('PATHS EXIST', paths)
-
-				let polyArr = [];
-				paths.forEach((pathObj) => {
-					console.log('pathObj:', pathObj);
-					var col = '#'+Math.floor(Math.random()*16777215).toString(16);
-					//- console.log('This is the path: ', p)
-					let poly = new google.maps.Polyline({
-						strokeColor: col,
-						strokeOpacity: 0.8,
-						strokeWeight: 6
-					});
-
-					google.maps.event.addListener(poly, "mouseover", () => {
-						console.log('Hovering over polyline');
-						poly.setOptions({
-							strokeOpacity: 1
-						})
-						console.log(poly.getPath().getArray().toString());
-					})
-
-					google.maps.event.addListener(poly, "mouseout", () => {
-						console.log('Mouseout of polyline');
-						poly.setOptions({
-							strokeOpacity: 0.8
-						})
-					})
-
-					polyArr.push(poly);
-
-					pathObj.path.forEach((node) => {
-						//- console.log('node:', node);
-						let pArr = poly.getPath();
-						//- console.log('Node', node)
-						let latLng = new google.maps.LatLng(node.latitude, node.longitude);
-						pArr.push(latLng)
-					})
-				})
-
-				polyArr.forEach((polyLine) => {
-					console.log('Added polyline')
-					polyLine.setMap(map)
-				})
-
-			} else { console.log('No paths') }
-
-			userList.forEach((user) => {
-				var latLng = new google.maps.LatLng(user.lastLocation.latitude, user.lastLocation.longitude);
-				var marker = new google.maps.Marker({
-					position: latLng,
-					map: map
+				//- var markerArray = [];
+				console.log('Centered on: ', center)
+				
+				var map = new google.maps.Map(document.getElementById('map'), {
+					zoom: 13,
+					center: center
 				});
-			});
+
+				//- poly = new google.maps.Polyline({
+				//- 	strokeColor: 'blue',
+				//- 	strokeOpacity: 0.8,
+				//- 	strokeWeight: 2
+				//- });
+				//- poly.setMap(map);
+
+				var userList = !{JSON.stringify(userList).replace(/<\//g, '<\\/')};
+				var paths = !{JSON.stringify(paths)};
+				//- var paths = !{paths}
+				if(paths !== null){
+					console.log('PATHS EXIST', paths)
+
+					let polyArr = [];
+					paths.forEach((pathObj) => {
+						//- console.log('pathObj:', pathObj);
+						var col = '#'+Math.floor(Math.random()*16777215).toString(16);
+
+						
+
+
+
+						//- console.log('This is the path: ', p)
+						let dPoly = new google.maps.Polyline({
+							strokeColor : col,
+							strokeOpacity : 0.8,
+							strokeWeight : 6				
+						})
+
+						//- let poly = new dPoly({
+						//- 	strokeColor: col,
+						//- 	strokeOpacity: 0.8,
+						//- 	strokeWeight: 6,
+						//- 	user: selectedUser
+						//- });
+
+						var addListeners = (polyline, path) => {
+							google.maps.event.addListener(polyline, 'click', (event) => {
+								console.log(path.id);
+								//- selectPath(path.id)
+							})
+							google.maps.event.addListener(polyline, 'mouseover', (event) => {
+								dPoly.setOptions({
+									strokeOpacity : 1
+								})
+							})
+							google.maps.event.addListener(polyline, 'mouseout', (event) => {
+								dPoly.setOptions({
+									strokeOpacity : 0.8
+								})
+							})
+						}
+
+						addListeners(dPoly, pathObj);
+
+						//- google.maps.event.addListener(dPoly, "mouseover", () => {
+						//- 	console.log('Hovering over dPolyline');
+						//- 	dPoly.strokeOpacity = 1
+						//- 	//- console.log(dPoly.getPath().getArray().toString());
+						//- })
+
+						//- google.maps.event.addListener(dPoly, "mouseout", () => {
+						//- 	console.log('Mouseout of dPolyline');
+						//- 	dPoly.strokeOpacity = 0.8;
+						//- })
+
+						polyArr.push(dPoly);
+
+						pathObj.path.forEach((node) => {
+							//- console.log('node:', node);
+							let pArr = dPoly.getPath();
+							//- console.log('Node', node)
+							let latLng = new google.maps.LatLng(node.latitude, node.longitude);
+							pArr.push(latLng)
+						})
+					})
+
+					polyArr.forEach((polyLine) => {
+						console.log('Added polyline')
+						polyLine.setMap(map)
+					})
+
+				} else { console.log('No paths') }
+
+				userList.forEach((user) => {
+					var latLng = new google.maps.LatLng(user.lastLocation.latitude, user.lastLocation.longitude);
+					var marker = new google.maps.Marker({
+						position: latLng,
+						map: map
+					});
+				});
 
 			  //- var marker = new google.maps.Marker({
 			  //-   position: {lat: x.lastLocation.latitude, lng: 73.505828},
