@@ -24,7 +24,7 @@ router.get('/:user', (req, res) => {
 				// console.log('Userlist at :user', JSON.stringify(userList))
 				// console.log('Listing paths for user: '+ req.params.user + ' ' + paths)
 				let selectedUser = _.find(userList, { 'id' : req.params.user })
-				res.render('map', {title: 'Map: Viewing paths for ' + selectedUser.name, paths: paths, userList: userList, selectedUser: selectedUser });
+				res.render('map', {title: 'Map: Viewing paths for ' + selectedUser.name, paths: JSON.stringify(paths), userList: userList, selectedUser: selectedUser });
 			});
 		} else { 
 			console.log('FAILED TO LOAD PATHS');
@@ -37,13 +37,12 @@ router.get('/:user', (req, res) => {
 function getPaths(user, callback) {
 	r.connect({db: 'vedi'}, (err, conn) => {
 		if (err) callback(err);
-		r.table('userLocation').run(conn, (err, result) => {
+		r.table('userLocation').filter({user: user}).pluck('path').run(conn, (err, result) => {
 			if (err) callback(err);
+			let pathArr = []
 			result.toArray((err, r) => {
 				if (err) callback(err);
-				// console.log('Pre filter', r);
-				result = _.filter(r, {'user': user});//test if multiple users work
-				// console.log('Post filter', r);
+				// pathArr.push(r.path);
 				callback(null, r)
 			}) 
 		})

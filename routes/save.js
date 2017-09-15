@@ -37,7 +37,7 @@ io.on('connection', function (socket) {
 
 });
 
-router.get ('/drop', (req, res) => {
+/*router.get ('/drop', (req, res) => {
 	r.connect({db: 'vedi'}, (err, conn) => {
 		r.db('vedi').tableList().run(conn, (err, res) => {
 			if (err) throw err;
@@ -64,7 +64,7 @@ router.get ('/drop', (req, res) => {
 			})
 		})
 		res.send('ok')
-	})
+	})*/
 
 function userLocationUpsert(node, callback) {
 	r.connect({db: 'vedi'}, (err, conn) => {
