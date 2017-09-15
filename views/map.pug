@@ -11,6 +11,10 @@ block content
 						a(href='/map/' + user.id)=user.name
 		
 	- }
+	script(src="https://code.jquery.com/jquery-3.2.1.min.js",
+	  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=",
+	  crossorigin="anonymous")
+
 
 	div#map(style="height: 100vh; width: 100%")
 		script.
@@ -23,20 +27,12 @@ block content
 					center = (selectedUser) ? {lat: selectedUser.lastLocation.latitude, lng: selectedUser.lastLocation.longitude} : center
 				}
 
-				//- var markerArray = [];
 				console.log('Centered on: ', center)
 				
 				var map = new google.maps.Map(document.getElementById('map'), {
 					zoom: 13,
 					center: center
 				});
-
-				//- poly = new google.maps.Polyline({
-				//- 	strokeColor: 'blue',
-				//- 	strokeOpacity: 0.8,
-				//- 	strokeWeight: 2
-				//- });
-				//- poly.setMap(map);
 
 				var userList = !{JSON.stringify(userList).replace(/<\//g, '<\\/')};
 				var paths = !{JSON.stringify(paths)};
@@ -46,31 +42,18 @@ block content
 
 					let polyArr = [];
 					paths.forEach((pathObj) => {
-						//- console.log('pathObj:', pathObj);
-						var col = '#'+Math.floor(Math.random()*16777215).toString(16);
-
-						
-
-
-
-						//- console.log('This is the path: ', p)
+						var col = '#'+Math.floor(Math.random()*16777215).toString(16);		
+						//- Regular google.maps.Polyline
 						let dPoly = new google.maps.Polyline({
 							strokeColor : col,
 							strokeOpacity : 0.8,
 							strokeWeight : 6				
 						})
 
-						//- let poly = new dPoly({
-						//- 	strokeColor: col,
-						//- 	strokeOpacity: 0.8,
-						//- 	strokeWeight: 6,
-						//- 	user: selectedUser
-						//- });
-
 						var addListeners = (polyline, path) => {
 							google.maps.event.addListener(polyline, 'click', (event) => {
 								console.log(path.id);
-								//- selectPath(path.id)
+								editPath(path.id);
 							})
 							google.maps.event.addListener(polyline, 'mouseover', (event) => {
 								dPoly.setOptions({
@@ -122,11 +105,10 @@ block content
 						map: map
 					});
 				});
-
-			  //- var marker = new google.maps.Marker({
-			  //-   position: {lat: x.lastLocation.latitude, lng: 73.505828},
-			  //-   map: map
-			  //- });
 			}
+			function editPath (id) {
+
+			}
+
 
 		script(async, defer, src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC0g37AIh4J1U1YeO_cN9g0gxnv6YnreYQ&callback=initMap")
