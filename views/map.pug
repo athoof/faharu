@@ -41,8 +41,8 @@ block content
 					console.log('PATHS EXIST', paths)
 
 					let polyArr = [];
-					paths.forEach((pathObj) => {
-						var col = '#'+Math.floor(Math.random()*16777215).toString(16);		
+					paths.forEach((pathObj, index) => {
+						var col = '#'+Math.floor(Math.random()*2500).toString(16);		
 						//- Regular google.maps.Polyline
 						let dPoly = new google.maps.Polyline({
 							strokeColor : col,
@@ -50,10 +50,14 @@ block content
 							strokeWeight : 6				
 						})
 
-						var addListeners = (polyline, path) => {
+						var addListeners = (polyline) => {
 							google.maps.event.addListener(polyline, 'click', (event) => {
-								console.log(path.id);
-								editPath(path.id);
+								console.log('time', pathObj.last);
+								let date = new Date(pathObj.path.timestamp*1000);
+								let hours = date.getHours()+5;
+								let minutes = "0" + date.getMinutes();
+								let seconds = "0" + date.getSeconds();
+								console.log(hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2) , 'UTC+5');
 							})
 							google.maps.event.addListener(polyline, 'mouseover', (event) => {
 								dPoly.setOptions({
@@ -66,20 +70,7 @@ block content
 								})
 							})
 						}
-
-						addListeners(dPoly, pathObj);
-
-						//- google.maps.event.addListener(dPoly, "mouseover", () => {
-						//- 	console.log('Hovering over dPolyline');
-						//- 	dPoly.strokeOpacity = 1
-						//- 	//- console.log(dPoly.getPath().getArray().toString());
-						//- })
-
-						//- google.maps.event.addListener(dPoly, "mouseout", () => {
-						//- 	console.log('Mouseout of dPolyline');
-						//- 	dPoly.strokeOpacity = 0.8;
-						//- })
-
+						addListeners(dPoly);//mouseover/mouseout/click events
 						polyArr.push(dPoly);
 
 						pathObj.path.forEach((node) => {
@@ -87,6 +78,7 @@ block content
 							let pArr = dPoly.getPath();
 							//- console.log('Node', node)
 							let latLng = new google.maps.LatLng(node.latitude, node.longitude);
+							
 							pArr.push(latLng)
 						})
 					})
@@ -100,15 +92,26 @@ block content
 
 				userList.forEach((user) => {
 					var latLng = new google.maps.LatLng(user.lastLocation.latitude, user.lastLocation.longitude);
+					var shape = {
+						coords: [1, 1, 1, 20, 18, 20, 18, 1],
+						type: 'poly'
+					};
+					var image = {
+						url: user.photo,
+						size: new google.maps.Size(50, 50),
+						origin: new google.maps.Point(0, 0),
+						//- anchor: new google.maps.Point(0, 512),
+						scaledSize: new google.maps.Size(50, 50)
+					};
 					var marker = new google.maps.Marker({
+						title: user.name,
 						position: latLng,
+						//- shape: shape,
+						icon: image,
+						zIndex: 2,
 						map: map
 					});
 				});
 			}
-			function editPath (id) {
-
-			}
-
 
 		script(async, defer, src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC0g37AIh4J1U1YeO_cN9g0gxnv6YnreYQ&callback=initMap")

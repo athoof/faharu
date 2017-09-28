@@ -4,16 +4,21 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var session = require('express-session');
+var connect = require('connect');
+var vhost = require('vhost');
 
 var index = require('./routes/index');
-var users = require('./routes/users');
 var connectdb = require('./routes/connectdb');
 var save = require('./routes/save');
 var display = require('./routes/display');
 var map = require('./routes/map');
-// var user = require('./routes/user');
+var client = require('./routes/client');
 
 var app = express();
+
+app.use(vhost('vidhaafaiy.com', require('./vidhaafaiy/app')))//for a different project
+// app.use(router);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -28,12 +33,18 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
-app.use('/users', users);
 app.use('/connectdb', connectdb);
 app.use('/save', save);
 app.use('/display', display);
 app.use('/map', map);
-// app.use('/user', user);
+app.use('/client', client);
+
+var sess = {
+	secret: 'faharu',
+	cookie: {}
+}
+app.use(session(sess));
+console.log(session)
 
 
 // catch 404 and forward to error handler

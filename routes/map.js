@@ -14,15 +14,6 @@ router.get('/', (req, res) => {
 	});
 });
 
-// router.get('/:user', (req, res) => {
-// 	if (req.params.user) {
-// 		getPaths(req.params.user, (err, r) => {
-// 			if (err) throw err;
-// 			res.json(r);
-// 		})
-// 	}
-// })
-
 router.get('/:user', (req, res) => {
 	getUserList(null, (err, userList) => {
 		if (err) throw err;
@@ -62,7 +53,7 @@ function getUserList(searchparam, callback) {
 	var userList = [];
 	r.connect({db: 'vedi'}, (err, conn) => {
 		if (err) throw err;
-		r.table('user').pluck('id', 'name', 'lastLocation').run(conn, (err, result) => {
+		r.table('user').pluck('id', 'name', 'lastLocation', 'photo').run(conn, (err, result) => {
 			if (err) throw err;
 			result.toArray((err, result) => {
 				if (err) throw err;
@@ -72,7 +63,5 @@ function getUserList(searchparam, callback) {
 		})
 	})
 }
-
-
 
 module.exports = router;

@@ -8,15 +8,15 @@ var tables = ['userLocation', 'user']
 
 const io = require('socket.io')(8000);
 
-var sess = {
-	secret: 'faharu',
-	cookie: {}
-}
-router.use(session(sess));
+// var session = {
+// 	secret: 'faharu',
+// 	cookie: {}
+// }
+// router.use(session(session));
 
 var currentID = null;
-sess.currentID = null;
-console.log(sess);
+session.currentID = null;
+console.log(session.currentID);
 
 io.on('connection', function (socket) {
   // socket.emit('node', { hello: 'world' });
@@ -69,10 +69,10 @@ io.on('connection', function (socket) {
 function userLocationUpsert(node, callback) {
 	r.connect({db: 'vedi'}, (err, conn) => {
 		if (err) callback(err);
-		if (node.nodeNumber > 0 && typeof sess.pathID !== 'undefined') {
+		if (node.nodeNumber > 0 && typeof session.pathID !== 'undefined') {
 			//if not nodeNumber #0, path exists, therefore append...
 			//append{///////////////////////////////////////////////////////////////////////////
-			r.table('userLocation').get(sess.pathID).update({
+			r.table('userLocation').get(session.pathID).update({
 				path: r.row("path").append({
 					nodeNumber: node.nodeNumber,
 					latitude: node.latitude,
@@ -81,9 +81,9 @@ function userLocationUpsert(node, callback) {
 				})
 			}).run(conn, (err, r) => {
 				if (err) callback(err);
-				callback( null, sess.pathID);//return the pathID that was just updated
+				callback( null, session.pathID);//return the pathID that was just updated
 			})
-		callback(null, sess.pathID);
+		callback(null, session.pathID);
 		} else {
 			//if nodeNumber is 0, or path has not been created, insert...
 			//insert{///////////////////////////////////////////////////////////////////////////
@@ -113,13 +113,15 @@ function userUpsert(node, callback) {
 			if (res == true) {
 				console.log('Updating existing user');
 				r.table('user').get(node.user.id).update({
-					lastLocation: {
-						latitude: node.latitude,
-						longitude: node.longitude,
-						timestamp: node.timestamp,
+					lastLocation : {
+						latitude : node.latitude,
+						longitude : node.longitude,
+						timestamp : node.timestamp,
 					}
+				}).run(conn, (err, r) => {
+					if (err) callback(err);
+					callback(null, node.user.id);
 				})
-				callback(null, node.user.id);
 			} else {
 				console.log('Inserting new user');
 				r.table('user').insert({	
@@ -131,10 +133,10 @@ function userUpsert(node, callback) {
 					photo : node.user.photo,
 					serverAuthCode : node.user.serverAuthCode,
 					scopes : node.user.scopes,
-					lastLocation: {
-						latitude: node.latitude,
-						longitude: node.longitude,
-						timestamp: node.timestamp,
+					lastLocation : {
+						latitude : node.latitude,
+						longitude : node.longitude,
+						timestamp : node.timestamp,
 					}
 				}).run(conn, (err, res) => {
 					if (err) callback(err);
@@ -146,17 +148,17 @@ function userUpsert(node, callback) {
 }
 
 function save(node) {
-	sess.user = node.user.id;
+	session.user = node.user.id;
 	userUpsert(node, (err, res) => {
 		if (err) console.log(err);
-		sess.user = res;
-		console.log('User: ', sess.user, '|| ', node.user.id);
+		session.user = res;
+		console.log('User: ', session.user, '|| ', node.user.id);
 	})
 	console.log('Inserting/Appending path');
 	userLocationUpsert(node, (err, res) => {
 		if (err) throw err;
-		sess.pathID = res;
-		console.log('Node added to path: ', sess.pathID)
+		session.pathID = res;
+		console.log('Node added to path: ', session.pathID)
 	})
 }
 
