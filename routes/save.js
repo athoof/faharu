@@ -8,6 +8,7 @@ var tables = ['userLocation', 'user']
 
 const io = require('socket.io')(8000);
 
+
 // var session = {
 // 	secret: 'faharu',
 // 	cookie: {}
@@ -25,9 +26,11 @@ io.on('connection', function (socket) {
     save(node);
   });
 
-  socket.on('beginPath', function (node) {
-    console.log(node);
-    beginPath(node);
+  socket.on('getUsers', function (user) {
+    console.log(user);
+    getUsers(user, (err, userList) => {
+    	socket.emit('receiveUsers', {userList});
+    });
   });
 
   socket.on('endPath', function (node) {
@@ -36,6 +39,23 @@ io.on('connection', function (socket) {
   });
 
 });
+
+getUsers = (currentUser, callback) => {
+	r.connect({db: 'vedi'}, (err, conn) => {
+		r.table('user').pluck('photo','name','id').run(conn, (err, cursor) => {
+			if (err) callback(err);
+			cursor.toArray((err, results) => {
+				if (err) callback (err);
+				console.log('Results:', results);
+				var result = [];
+				results.forEach((user) => {
+					result.push(user);
+				})
+				callback(null, results);
+			})
+		})
+	})
+}
 
 /*router.get ('/drop', (req, res) => {
 	r.connect({db: 'vedi'}, (err, conn) => {
@@ -66,7 +86,7 @@ io.on('connection', function (socket) {
 		res.send('ok')
 	})*/
 
-function userLocationUpsert(node, callback) {
+userLocationUpsert = (node, callback) => {
 	r.connect({db: 'vedi'}, (err, conn) => {
 		if (err) callback(err);
 		if (node.nodeNumber > 0 && typeof session.pathID !== 'undefined') {
@@ -104,7 +124,7 @@ function userLocationUpsert(node, callback) {
 	})
 }
 
-function userUpsert(node, callback) {
+userUpsert = (node, callback) => {
 	r.connect({db: 'vedi'}, (err, conn) => {
 		if (err) throw err;
 		r.table('user')('id').contains(node.user.id).run(conn, (err, res) => {
@@ -147,7 +167,7 @@ function userUpsert(node, callback) {
 	})
 }
 
-function save(node) {
+save = function (node) {
 	session.user = node.user.id;
 	userUpsert(node, (err, res) => {
 		if (err) console.log(err);
@@ -162,4 +182,4 @@ function save(node) {
 	})
 }
 
-module.exports = router;
+module.exports = router, save, io;
