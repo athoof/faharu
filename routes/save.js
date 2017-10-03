@@ -54,61 +54,70 @@ io.on('connection', (socket) => {
 upsertMessage = (messageObj, callback) => {//upsert
 	r.connect({db: 'vedi'}, (err, conn) => {
 		if (err) callback(err);
-		getMessages(messageObj.users, (err, messageID) => {
-			if (err) callback(err);
-			if (messageID !== null && typeof messageID !== 'undefined') {//update/append
-				r.table('messaging').run(conn, (err, result) => {
-					if (err) callback(err);
-					r.table('messaging').get(messageID).update({
-						messages: r.row('messages').append({
-							sender : messageObj.sender,
-							recipient : messageObj.recipient,
-							messageBody : messageObj.message,
-							timestamp : messageObj.timestamp,
-						}).run(conn, (err, r) => {
-							if (err) callback(err);
-							console.log('append: ', r);
-							callback(null, r);
-						})
-					});
-				});
-			} else {//insert
-				r.table('messaging').insert({//okay but this isn't working???
-					users: [messageObj.sender, messageObj.recipient],
-					messages: [{
+		// getMessages(messageObj.users, (err, messageID) => {
+		// if (err) callback(err);
+		r.table('messaging').filter({'users': messageObj.users}).pluck('id').run(conn, (err, result) => {
+			if (err) callback (err);
+			if (typeof result !== 'undefined' && result !== null && result > 0) {
+				r.table('messaging').get(result).update({
+					messages: r.row('messages').append({
 						sender : messageObj.sender,
 						recipient : messageObj.recipient,
 						messageBody : messageObj.message,
 						timestamp : messageObj.timestamp,
-					}]
-				}).run(conn, (err, r) => {
+					}).run(conn, (err, r) => {
+						if (err) callback(err);
+						console.log('append: ', r);
+						callback(null, r);
+					})
+				});
+			} else {
+				r.table('messaging').insert(messageObj).run(conn, (err, r) => {
 					if (err) callback(err);
 					console.log('insert:', r);
 					callback(null, r);
 				})
+				// callback(result);
 			}
-			console.log('Saved message: ', messageObj.message)
-		});
+		})
+		// if ( typeof messageID !== 'undefined' && messageID !== null ) {//update/append
+			// r.table('messaging').run(conn, (err, result) => {
+				// if (err) callback(err);
+				
+			// });
+		// } else {//insert
+			// console.log('messageID: ', messageID);
+			
+		// }
+		console.log('Saved message: ', messageObj.message)
+		// });
 	});
 }
 
 getMessages = (users, callback) => {
 	r.connect({db: 'vedi'}, (err, conn) => {
 		if (err) callback(err);
-		r.table('messaging').filter({users: users}).run(conn, (err, result) => {
-			if (err) callback(err);
-			// console.log('Messages...', result);
+		r.table('messaging').count().gt(0).run(conn, (err, result) => {
+			if (err) callback (err);
 			if (result) {
-				console.log(result.id);
-				callback(null, result.id);
+				r.table('messaging').filter({users: users}).run(conn, (err, result) => {
+					if (err) callback(err);
+					// console.log('Messages...', result);
+					if (result) {
+						console.log(result.id);
+						callback(null, result.id);
+					} else {
+						console.log(result);
+						callback('Result is empty', null)
+					}
+					// result.toArray((err, results) => {
+					// 	if (err) callback(err);
+					// 	callback(null, results);
+					// })
+				})
 			} else {
-				console.log(result);
-				callback('Result is empty', null)
+				callback('No records exist');
 			}
-			// result.toArray((err, results) => {
-			// 	if (err) callback(err);
-			// 	callback(null, results);
-			// })
 		})
 	})
 }
