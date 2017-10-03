@@ -252,3 +252,10 @@
 2017-09-05T11:41:57.178352211 1.894167s info: Table 3fb2632c-c9f6-4e31-af0c-9f7aea4feed7: This server is Raft leader for term 8. Latest log index is 21.
 2017-09-05T11:41:57.772200393 2.488015s info: Table fdccfa34-1f0f-40bf-8c58-d3c31a70a4d0: Starting a new Raft election for term 8.
 2017-09-05T11:41:57.773638048 2.489452s info: Table fdccfa34-1f0f-40bf-8c58-d3c31a70a4d0: This server is Raft leader for term 8. Latest log index is 21.
+2017-09-09T14:12:09.079091495 0.313456s notice: Running rethinkdb 2.3.6~0xenial (GCC 5.3.1)...
+2017-09-09T14:12:09.082385767 0.316752s notice: Running on Linux 4.4.76-1-pve x86_64
+2017-09-09T14:12:09.082421474 0.316786s notice: Loading data from directory /root/faharu/rethinkdb_data
+2017-09-09T14:12:09.103485066 0.337850s info: Automatically using cache size of 100 MB
+2017-09-09T14:12:09.104850184 0.339215s warn: Cache size does not leave much memory for server and query overhead (available memory: 792 MB).
+2017-09-09T14:12:09.104856831 0.339221s warn: Cache size is very low and may impact performance.
+2017-09-09T14:12:09.107233423 0.341598s error: TCP socket creation failed for port 29015: Address already in use.

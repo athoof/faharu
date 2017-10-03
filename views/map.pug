@@ -2,34 +2,116 @@ extends layout
 
 block content
 	h1= title
-	//- p= users
+
+	- if (typeof userList !== 'undefined') {
+		div#userList
+			ul
+				each user in userList
+					li
+						a(href='/map/' + user.id)=user.name
+		
+	- }
+	script(src="https://code.jquery.com/jquery-3.2.1.min.js",
+	  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=",
+	  crossorigin="anonymous")
+
 
 	div#map(style="height: 100vh; width: 100%")
 		script.
 			function initMap() {
-			  var maldives = {lat: 4.178044, lng: 73.505828};
-			  var markerArray = [];
+				var maldives = {lat: 4.178044, lng: 73.505828};
+				var center = maldives;
+				if (selectedUser !== null) {
+					console.log('selectedUser: ', selectedUser)
+					var selectedUser = !{JSON.stringify(selectedUser).replace(/<\//g, '<\\/')};
+					center = (selectedUser) ? {lat: selectedUser.lastLocation.latitude, lng: selectedUser.lastLocation.longitude} : center
+				}
 
-			  var map = new google.maps.Map(document.getElementById('map'), {
-			    zoom: 9,
-			    center: maldives
-			  });
-			  
-			  var users = !{JSON.stringify(users).replace(/<\//g, '<\\/')};
-			  console.log(users[0])
-			  users.forEach((user) => {
-			  	console.log(user.lastLocation.latitude);
-			  	var latLng = new google.maps.LatLng(user.lastLocation.latitude, user.lastLocation.longitude);
-				var marker = new google.maps.Marker({
-					position: latLng,
-					map: map
+				console.log('Centered on: ', center)
+				
+				var map = new google.maps.Map(document.getElementById('map'), {
+					zoom: 13,
+					center: center
 				});
-			  });
 
-			  //- var marker = new google.maps.Marker({
-			  //-   position: {lat: x.lastLocation.latitude, lng: 73.505828},
-			  //-   map: map
-			  //- });
+				var userList = !{JSON.stringify(userList).replace(/<\//g, '<\\/')};
+				var paths = !{JSON.stringify(paths)};
+				//- var paths = !{paths}
+				if(paths !== null){
+					console.log('PATHS EXIST', paths)
+
+					let polyArr = [];
+					paths.forEach((pathObj, index) => {
+						var col = '#'+Math.floor(Math.random()*2500).toString(16);		
+						//- Regular google.maps.Polyline
+						let dPoly = new google.maps.Polyline({
+							strokeColor : col,
+							strokeOpacity : 0.8,
+							strokeWeight : 6				
+						})
+
+						var addListeners = (polyline) => {
+							google.maps.event.addListener(polyline, 'click', (event) => {
+								console.log('time', pathObj.last);
+								let date = new Date(pathObj.path.timestamp*1000);
+								let hours = date.getHours()+5;
+								let minutes = "0" + date.getMinutes();
+								let seconds = "0" + date.getSeconds();
+								console.log(hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2) , 'UTC+5');
+							})
+							google.maps.event.addListener(polyline, 'mouseover', (event) => {
+								dPoly.setOptions({
+									strokeOpacity : 1
+								})
+							})
+							google.maps.event.addListener(polyline, 'mouseout', (event) => {
+								dPoly.setOptions({
+									strokeOpacity : 0.8
+								})
+							})
+						}
+						addListeners(dPoly);//mouseover/mouseout/click events
+						polyArr.push(dPoly);
+
+						pathObj.path.forEach((node) => {
+							//- console.log('node:', node);
+							let pArr = dPoly.getPath();
+							//- console.log('Node', node)
+							let latLng = new google.maps.LatLng(node.latitude, node.longitude);
+							
+							pArr.push(latLng)
+						})
+					})
+
+					polyArr.forEach((polyLine) => {
+						console.log('Added polyline')
+						polyLine.setMap(map)
+					})
+
+				} else { console.log('No paths') }
+
+				userList.forEach((user) => {
+					var latLng = new google.maps.LatLng(user.lastLocation.latitude, user.lastLocation.longitude);
+					var shape = {
+						coords: [1, 1, 1, 20, 18, 20, 18, 1],
+						type: 'poly'
+					};
+					var image = {
+						url: user.photo,
+						size: new google.maps.Size(50, 50),
+						origin: new google.maps.Point(0, 0),
+						//- anchor: new google.maps.Point(0, 512),
+						scaledSize: new google.maps.Size(50, 50)
+					};
+					var marker = new google.maps.Marker({
+						title: user.name,
+						position: latLng,
+						//- shape: shape,
+						icon: image,
+						zIndex: 2,
+						map: map
+					});
+				});
 			}
 
 		script(async, defer, src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC0g37AIh4J1U1YeO_cN9g0gxnv6YnreYQ&callback=initMap")

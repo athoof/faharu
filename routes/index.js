@@ -10,4 +10,10 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Faharu' });
 });
 
+router.get('/download', (req, res) => {
+	var file = 'public/downloads/odi_1.2.apk';
+	res.download(file);
+	// res.render('index', { title: 'Faharu' });
+});
+
 module.exports = router;

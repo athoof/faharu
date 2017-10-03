@@ -4,6 +4,12 @@ body {
 		font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
+h1 {
+	font-size: 20px;
+	font-weight: bold;
+	
+}
+
 #download {
 	-webkit-box-shadow: 0px 4px 19px -6px rgba(0,0,0,0.36); 
 	-moz-box-shadow: 0px 4px 19px -6px rgba(0,0,0,0.36); 
@@ -18,6 +24,23 @@ body {
 	text-shadow: 0 1px 1px rgba(0,0,0,0.36);
 	background-color: white;
 	border-radius: 8px;
+}
+
+#userList ul li {
+	display: inline-block;
+	width: auto;
+	height: 25px;
+	background: white;
+	border-radius: 8px;
+	margin: 5px;
+	box-shadow: 0 1px 1px rgba(0,0,0,0.36);
+}
+
+#userList ul li a {
+	display: inline-block;
+	text-decoration: none;
+	padding: 12px;
+	line-height: 0px;
 }
 
 a {
