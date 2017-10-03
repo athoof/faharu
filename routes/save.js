@@ -7,46 +7,120 @@ var session = require('express-session');
 var tables = ['userLocation', 'user']
 
 const io = require('socket.io')(8000);
-
-
-// var session = {
-// 	secret: 'faharu',
-// 	cookie: {}
-// }
-// router.use(session(session));
+/*var session = {
+	secret: 'faharu',
+	cookie: {}
+}
+router.use(session(session));*/
 
 var currentID = null;
 session.currentID = null;
 console.log(session.currentID);
 
-io.on('connection', function (socket) {
+io.on('connection', (socket) => {
   // socket.emit('node', { hello: 'world' });
-  socket.on('addNode', function (node) {
+  socket.on('addNode', (node) => {
     console.log('Socket open: ', node.timestamp);
     save(node);
   });
 
-  socket.on('getUsers', function (user) {
+  socket.on('getUsers', (user) => {
     console.log(user);
     getUsers(user, (err, userList) => {
     	socket.emit('receiveUsers', {userList});
     });
   });
 
-  socket.on('endPath', function (node) {
-    console.log(node);
-    endPath(node);
+  socket.on('getMessages', (selectedRecipient) => {
+    console.log(selectedRecipient);
+    getMessages(selectedRecipient, (err, messageBuffer) => {
+    	socket.emit('messageBuffer', {messageBuffer});
+    });
+  });
+
+  socket.on('sendMessage', (messageObj) => {
+    console.log('Message received, saving: ', messageObj.message);
+    upsertMessage(messageObj, (err, result) => {
+    	if (err) throw err;
+    	console.log('upsertMessage result: ', result);
+    });
+    // getMessages(messageObj.users, (err, messageBuffer) => {
+    // 	socket.emit('messageBuffer', {messageBuffer});
+    // })
   });
 
 });
 
+upsertMessage = (messageObj, callback) => {//upsert
+	r.connect({db: 'vedi'}, (err, conn) => {
+		if (err) callback(err);
+		getMessages(messageObj.users, (err, messageID) => {
+			if (err) callback(err);
+			if (messageID !== null && typeof messageID !== 'undefined') {//update/append
+				r.table('messaging').run(conn, (err, result) => {
+					if (err) callback(err);
+					r.table('messaging').get(messageID).update({
+						messages: r.row('messages').append({
+							sender : messageObj.sender,
+							recipient : messageObj.recipient,
+							messageBody : messageObj.message,
+							timestamp : messageObj.timestamp,
+						}).run(conn, (err, r) => {
+							if (err) callback(err);
+							console.log('append: ', r);
+							callback(null, r);
+						})
+					});
+				});
+			} else {//insert
+				r.table('messaging').insert({//okay but this isn't working???
+					users: [messageObj.sender, messageObj.recipient],
+					messages: [{
+						sender : messageObj.sender,
+						recipient : messageObj.recipient,
+						messageBody : messageObj.message,
+						timestamp : messageObj.timestamp,
+					}]
+				}).run(conn, (err, r) => {
+					if (err) callback(err);
+					console.log('insert:', r);
+					callback(null, r);
+				})
+			}
+			console.log('Saved message: ', messageObj.message)
+		});
+	});
+}
+
+getMessages = (users, callback) => {
+	r.connect({db: 'vedi'}, (err, conn) => {
+		if (err) callback(err);
+		r.table('messaging').filter({users: users}).run(conn, (err, result) => {
+			if (err) callback(err);
+			// console.log('Messages...', result);
+			if (result) {
+				console.log(result.id);
+				callback(null, result.id);
+			} else {
+				console.log(result);
+				callback('Result is empty', null)
+			}
+			// result.toArray((err, results) => {
+			// 	if (err) callback(err);
+			// 	callback(null, results);
+			// })
+		})
+	})
+}
+
 getUsers = (currentUser, callback) => {
 	r.connect({db: 'vedi'}, (err, conn) => {
+		if (err) throw err;
 		r.table('user').pluck('photo','name','id').run(conn, (err, cursor) => {
 			if (err) callback(err);
 			cursor.toArray((err, results) => {
 				if (err) callback (err);
-				console.log('Results:', results);
+				// console.log('Results:', results);
 				var result = [];
 				results.forEach((user) => {
 					result.push(user);
