@@ -1,61 +1,137 @@
 var r = require('rethinkdb');
 var _ = require('lodash');
-// const io = require('socket.io')();
 
 var express = require('express');
 var router = express.Router();
-// var Location = require('location.js');
-var connection;
-var connStatus = false;
-var currentID = null;
-var x;
-const io = require('socket.io')(8000);
+var session = require('express-session');
+var tables = ['userLocation', 'user']
 
-io.on('connection', function (socket) {
+const io = require('socket.io')(8000);
+/*var session = {
+	secret: 'faharu',
+	cookie: {}
+}
+router.use(session(session));*/
+
+var currentID = null;
+session.currentID = null;
+console.log(session.currentID);
+
+io.on('connection', (socket) => {
   // socket.emit('node', { hello: 'world' });
-  socket.on('addNode', function (node) {
-    // console.log(node);
+  socket.on('addNode', (node) => {
+    console.log('Socket open: ', node.timestamp);
     save(node);
   });
 
-  socket.on('beginPath', function (node) {
-    console.log(node);
-    beginPath(node);
+  socket.on('getUsers', (user) => {
+    console.log(user);
+    getUsers(user, (err, userList) => {
+    	socket.emit('receiveUsers', {userList});
+    });
   });
 
-  socket.on('endPath', function (node) {
-    console.log(node);
-    endPath(node);
+  socket.on('getMessages', (selectedRecipient) => {
+    console.log(selectedRecipient);
+    getMessages(selectedRecipient, (err, messageBuffer) => {
+    	socket.emit('messageBuffer', {messageBuffer});
+    });
+  });
+
+  socket.on('sendMessage', (messageObj) => {
+    console.log('Message received, saving: ', messageObj.message);
+    upsertMessage(messageObj, (err, result) => {
+    	if (err) throw err;
+    	console.log('upsertMessage result: ', result);
+    });
+    // getMessages(messageObj.users, (err, messageBuffer) => {
+    // 	socket.emit('messageBuffer', {messageBuffer});
+    // })
   });
 
 });
 
-
-// console.log(io.connected);
-
-// io.on('connection', function (socket) {
-//   socket.emit('news', { hello: 'world' });
-//   socket.on('my other event', function (data) {
-//     console.log(data);
-//   });
-// });
-
-// const port = 8000;
-// io.listen(port);
-// console.log('Listening');
-
-class Node {
-	constructor(latitude, longitude, nodeNumber, timestamp) {
-		this.latitude = latitude;
-		this.longitude = longitude;
-		this.nodeNumber = nodeNumber;
-		this.timestamp = timestamp;
-	}
+upsertMessage = (messageObj, callback) => {//upsert
+	r.connect({db: 'vedi'}, (err, conn) => {
+		if (err) callback(err);
+		getMessages(messageObj.users, (err, messageID) => {
+			if (err) callback(err);
+			if (messageID !== null && typeof messageID !== 'undefined') {//update/append
+				r.table('messaging').run(conn, (err, result) => {
+					if (err) callback(err);
+					r.table('messaging').get(messageID).update({
+						messages: r.row('messages').append({
+							sender : messageObj.sender,
+							recipient : messageObj.recipient,
+							messageBody : messageObj.message,
+							timestamp : messageObj.timestamp,
+						}).run(conn, (err, r) => {
+							if (err) callback(err);
+							console.log('append: ', r);
+							callback(null, r);
+						})
+					});
+				});
+			} else {//insert
+				r.table('messaging').insert({//okay but this isn't working???
+					users: [messageObj.sender, messageObj.recipient],
+					messages: [{
+						sender : messageObj.sender,
+						recipient : messageObj.recipient,
+						messageBody : messageObj.message,
+						timestamp : messageObj.timestamp,
+					}]
+				}).run(conn, (err, r) => {
+					if (err) callback(err);
+					console.log('insert:', r);
+					callback(null, r);
+				})
+			}
+			console.log('Saved message: ', messageObj.message)
+		});
+	});
 }
 
-var tables = ['userLocation', 'user']
+getMessages = (users, callback) => {
+	r.connect({db: 'vedi'}, (err, conn) => {
+		if (err) callback(err);
+		r.table('messaging').filter({users: users}).run(conn, (err, result) => {
+			if (err) callback(err);
+			// console.log('Messages...', result);
+			if (result) {
+				console.log(result.id);
+				callback(null, result.id);
+			} else {
+				console.log(result);
+				callback('Result is empty', null)
+			}
+			// result.toArray((err, results) => {
+			// 	if (err) callback(err);
+			// 	callback(null, results);
+			// })
+		})
+	})
+}
 
-router.get ('/drop', (req, res) => {
+getUsers = (currentUser, callback) => {
+	r.connect({db: 'vedi'}, (err, conn) => {
+		if (err) throw err;
+		r.table('user').pluck('photo','name','id').run(conn, (err, cursor) => {
+			if (err) callback(err);
+			cursor.toArray((err, results) => {
+				if (err) callback (err);
+				// console.log('Results:', results);
+				var result = [];
+				results.forEach((user) => {
+					result.push(user);
+				})
+				callback(null, results);
+			})
+		})
+	})
+}
+
+/*router.get ('/drop', (req, res) => {
 	r.connect({db: 'vedi'}, (err, conn) => {
 		r.db('vedi').tableList().run(conn, (err, res) => {
 			if (err) throw err;
@@ -82,307 +158,102 @@ router.get ('/drop', (req, res) => {
 			})
 		})
 		res.send('ok')
-	})
+	})*/
 
-router.post('/updatepath', (req, res) => {
-	var recording = req.body.recording;
-	var latitude = req.body.latitude ? req.body.latitude : '0';
-	var longitude = req.body.longitude ? req.body.longitude : '0';
-	var user = req.body.user ? req.body.user : 'nouser';
-	var nodeNumber = req.body.nodeNumber ? req.body.nodeNumber : '0';
-	var timestamp = req.body.timestamp ? req.body.timestamp : '0';
-
-	var L = new Node(latitude, longitude, nodeNumber, timestamp);
-	// console.log (JSON.stringify(L));
-	if (req.body.recording == true) {
-		console.log('Adding node...(updatepath)');
-		r.connect({db: 'vedi'}, (err, conn) => {
-			if (err) throw err;
-			if(currentID == null && nodeNumber == 0) {
-				r.table('userLocation').insert({
-					user: user,
-					path: [{
-						nodeNumber: nodeNumber,
-						latitude: latitude,
-						longitude: longitude,
-						timestamp: timestamp,
-					}]
-				}).run(conn, (err, cursor) => {
-					if (err) throw err;
-					console.log('Inserted initial')
-					currentID = cursor.generated_keys[0];
-				})
-			} else {
-				r.table('userLocation').get(currentID).update({
-					path: r.row("path").append({
-						nodeNumber: nodeNumber,
-						latitude: latitude,
-						longitude: longitude,
-						timestamp: timestamp,
-					})
-				}).run(conn, (err, res) => {
-					if (err) throw err;
-					console.log("Appended: " + JSON.stringify(res));
-				})				
-			}
-		});
-	} else {
-		console.log('End path');
-		r.connect({db: 'vedi'}, (err, conn) => {
-			if (err) throw err;
-			r.table('userLocation').filter((user) => {
-				return user("name").eq(user.name);
-			}).filter((path) => {
-				return path("node").max("timestamp");
-			}).insert([
-				{
-					nodeNumber: nodeNumber,
-					latitude: latitude,
-					longitude: longitude,
-					timestamp: Math.floor(r.now() /1000),
-				},
-
-			])
-
-		})
-	}
-});
-
-function checkUser(node) {
+userLocationUpsert = (node, callback) => {
 	r.connect({db: 'vedi'}, (err, conn) => {
-		if (err) throw err;
-		r.table('user')('id').contains(node.user.id).run(conn, (err, res) => {
-			if (err) throw err;
-			if (res == true) {
-				console.log(res, 'User exists');
-				r.table('user').get(node.user.id).update({
-					lastLocation: {
-						latitude: node.latitude,
-						longitude: node.longitude,
-						timestamp: node.timestamp,
-					}
-				}).run(conn, (err, res) => {
-					if (err) throw err;
-					console.log(res, 'Last known location updated');
-				});
-				return true;
-			} else {
-				console.log('User does not exist', res);
-				r.table('user').insert({	
-						id : node.user.id,
-						accessToken : node.user.accessToken,
-						email : node.user.email,
-						idToken : node.user.idToken,
-						name : node.user.name,
-						photo : node.user.photo,
-						serverAuthCode : node.user.serverAuthCode,
-						scopes : node.user.scopes,
-						lastLocation: {
-							latitude: node.latitude,
-							longitude: node.longitude,
-							timestamp: node.timestamp,
-						}
-					}).run(conn, (err, r) => {
-					if (err) throw err;
-					console.log(r);
+		if (err) callback(err);
+		if (node.nodeNumber > 0 && typeof session.pathID !== 'undefined') {
+			//if not nodeNumber #0, path exists, therefore append...
+			//append{///////////////////////////////////////////////////////////////////////////
+			r.table('userLocation').get(session.pathID).update({
+				path: r.row("path").append({
+					nodeNumber: node.nodeNumber,
+					latitude: node.latitude,
+					longitude: node.longitude,
+					timestamp: node.timestamp,
 				})
-				return false;
-			}
-		})
-	})
-}
-
-function save(node) {
-	console.log('Saving #', node.nodeNumber)
-	console.log('Adding node')
-	r.connect({db: 'vedi'}, (err, conn) => {
-		if (err) throw err;
-		if (currentID != null) {
-			r.table('user')('id').contains(currentID.userid).run(conn, (err, res) => {
-				if (err) throw err;
-				if (res) {
-					r.do(
-						r.table('user').get(node.user.id).update({
-							lastLocation: {
-								latitude: node.latitude,
-								longitude: node.longitude,
-								timestamp: node.timestamp,
-							}
-						}),
-
-						r.table('userLocation').get(currentID.id).update((path)=>{
-							return path.append({//need to replace r.row
-								nodeNumber: node.nodeNumber,
-								latitude: node.latitude,
-								longitude: node.longitude,
-								timestamp: node.timestamp,
-							})
-						})
-/*
-						r.table('userLocation').update({
-							path: r.row("path").append({
-								nodeNumber: node.nodeNumber,
-								latitude: node.latitude,
-								longitude: node.longitude,
-								timestamp: node.timestamp,
-							})
-						})*/
-					).run(conn, (err, r) => {
-						if (err) throw err;
-						console.log('Appended ', currentID.id, ' lastLocation updated for ', currentID.userid);
-					})
-				}
+			}).run(conn, (err, r) => {
+				if (err) callback(err);
+				callback( null, session.pathID);//return the pathID that was just updated
 			})
+		callback(null, session.pathID);
 		} else {
-			r.table('user')('id').contains(node.user.id).run(conn, (err, res) => {
-				if (err) throw err;
-				if (res) {
-					r.table('userLocation').insert({
-						user: node.user.id,
-						path: [{
-							nodeNumber: node.nodeNumber,
-							latitude: node.latitude,
-							longitude: node.longitude,
-							timestamp: node.timestamp,
-						}]
-					}).run(conn, (err, cursor) => {
-						if (err) throw err;
-						currentID = {"id" : cursor.generated_keys[0], "userid" : node.user.id}
-						console.log('Inserted initial: ', currentID.id)
-					})
-				} else {
-					r.do(
-							r.table('user').insert({	
-								id : node.user.id,
-								accessToken : node.user.accessToken,
-								email : node.user.email,
-								idToken : node.user.idToken,
-								name : node.user.name,
-								photo : node.user.photo,
-								serverAuthCode : node.user.serverAuthCode,
-								scopes : node.user.scopes,
-								lastLocation: {
-									latitude: node.latitude,
-									longitude: node.longitude,
-									timestamp: node.timestamp,
-								}
-							}),
-							r.table('userLocation').insert({
-								user: node.user.id,
-								path : {
-									nodeNumber: node.nodeNumber,
-									latitude: node.latitude,
-									longitude: node.longitude,
-									timestamp: node.timestamp,
-								}
-							})
-						).run(conn, (err, r) => {
-							if (err) throw err;
-							currentID = {"id" : r.generated_keys[0], "userid" : node.user.id}
-							console.log('Inserted new path and updated last known location for ', currentID.userid)
-
-						})
-				}
+			//if nodeNumber is 0, or path has not been created, insert...
+			//insert{///////////////////////////////////////////////////////////////////////////
+			r.table('userLocation').insert({
+				user: node.user.id,
+				path: [{
+					nodeNumber: node.nodeNumber,
+					latitude: node.latitude,
+					longitude: node.longitude,
+					timestamp: node.timestamp,
+				}]
+			}).run(conn, (err, r) => {
+				if (err) callback(err);
+				callback(null, r.generated_keys[0]);//returns the pathID that was just inserted
 			})
+			///////////////////////////////////////////////////////////////////////////////////}
 		}
 	})
 }
 
-function saveZ(node) {
-	console.log('Saving #', node.nodeNumber)
-	if (node.recording == true) {
-		console.log('Adding node... save(node)');
-		console.log('User table check');
-		r.connect({db: 'vedi'}, (err, conn) => {
-			if (err) throw err;
-			checkUser(node);
-			if(currentID == null) {
-				r.table('userLocation').insert({
-					user: node.user.id,
-					path: [{
-						nodeNumber: node.nodeNumber,
-						latitude: node.latitude,
-						longitude: node.longitude,
-						timestamp: node.timestamp,
-					}]
-				}).run(conn, (err, cursor) => {
-					if (err) throw err;
-					currentID = cursor.generated_keys[0];
-					console.log('Inserted initial: ', currentID)
-				})
-			} else {
-				if (typeof currentID !== 'undefined' && currentID !== null) {
-					console.log('current user = ', node.user.name, 'Path exists, adding ', node.nodeNumber)
-					r.table('userLocation')('id').contains(currentID).run(conn, (err, res) => {
-						if (err) throw err;
-						if (res) {					
-							r.table('userLocation').get(currentID).update({
-								path: r.row("path").append({
-									nodeNumber: node.nodeNumber,
-									latitude: node.latitude,
-									longitude: node.longitude,
-									timestamp: node.timestamp,
-								})
-							}).run(conn, (err, res) => {
-								if (err) throw err;
-								console.log('Current path '+ currentID + ' was appended.');
-
-							})				
-						}
-					})
-				} else { 
-					console.log('currentID is null');
-				}
-			}
-		});
-	}
-};
-
-function pathInsert(pathNumber) {
+userUpsert = (node, callback) => {
 	r.connect({db: 'vedi'}, (err, conn) => {
 		if (err) throw err;
-
-		r.table('userLocation').insert([
-				{
-					pathNumber: pathNumber,
-					path: {  }
-				}
-			]).run(conn, (err, result) => {
-				if (err) throw err;
-				console.log('Created path ' + result.id);
-			})
-		})
-
-
-
-		// path.forEach((node, index) => {
-		// 	r.table('userLocation').insert([			
-		// 			{
-		// 				pathNumber: pathNumber,
-		// 				path: {
-		// 					node: {
-		// 						nodeNumber: node[0].nodeNumber,
-		// 						latitude: node[0].latitude,
-		// 						longitude: node[0].longitude}
-		// 				}
-		// 			}
-		// 		]).run(connection, function(err, result){
-		// 			if (err) throw err;
-		// 			console.log(JSON.stringify(result, null, 2));
-		// 		})
-		// })
-	// })
+		r.table('user')('id').contains(node.user.id).run(conn, (err, res) => {
+			if (err) callback(err);
+			console.log(res);
+			if (res == true) {
+				console.log('Updating existing user');
+				r.table('user').get(node.user.id).update({
+					lastLocation : {
+						latitude : node.latitude,
+						longitude : node.longitude,
+						timestamp : node.timestamp,
+					}
+				}).run(conn, (err, r) => {
+					if (err) callback(err);
+					callback(null, node.user.id);
+				})
+			} else {
+				console.log('Inserting new user');
+				r.table('user').insert({	
+					id : node.user.id,
+					accessToken : node.user.accessToken,
+					email : node.user.email,
+					idToken : node.user.idToken,
+					name : node.user.name,
+					photo : node.user.photo,
+					serverAuthCode : node.user.serverAuthCode,
+					scopes : node.user.scopes,
+					lastLocation : {
+						latitude : node.latitude,
+						longitude : node.longitude,
+						timestamp : node.timestamp,
+					}
+				}).run(conn, (err, res) => {
+					if (err) callback(err);
+					callback(null, node.user.id);
+				})
+			}
+		});
+	})
 }
 
+save = function (node) {
+	session.user = node.user.id;
+	userUpsert(node, (err, res) => {
+		if (err) console.log(err);
+		session.user = res;
+		console.log('User: ', session.user, '|| ', node.user.id);
+	})
+	console.log('Inserting/Appending path');
+	userLocationUpsert(node, (err, res) => {
+		if (err) throw err;
+		session.pathID = res;
+		console.log('Node added to path: ', session.pathID)
+	})
+}
 
-		// conn ? connStatus = true : connStatus = false;
-	// console.log(JSON.stringify(path))
-	// r.table('userLocations').insert([
-	// 		{
-	// 			location: [
-	// 				latitude: 
-	// 			]
-	// 		}
-	// 	])
-
-module.exports = router;
+module.exports = router, save, io;
