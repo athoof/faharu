@@ -3,22 +3,10 @@ var _ = require('lodash');
 
 var express = require('express');
 var router = express.Router();
-// var session = require('express-session');
 var tables = ['userLocation', 'user']
 
 const io = require('socket.io')(8000);
-/*var session = {
-	secret: 'faharu',
-	cookie: {}
-}*/
-// router.use(session(session));
-
-// var currentID = null;
-// session.currentID = null;
-// console.log(session.currentID);
-
 io.on('connection', (socket) => {
-  // socket.emit('node', { hello: 'world' });
   socket.on('addNode', (node, callback) => {
     console.log('Socket open: ', node.timestamp);
     save(node, (err, pathID) => {
@@ -27,34 +15,12 @@ io.on('connection', (socket) => {
     });
   });
 
-/*  socket.on('getUsers', (user, ack) => {
-    console.log('getUsers:', user);
-    console.log('ack', ack)
-    if (typeof user !== 'undefined' && user !== null) {
-	    getUsers(user, (err, userList) => {
-	    	if (err) throw err;
-	    	socket.emit('receiveUsers', {userList});
-	    	// console.log('userList:', userList)//why is this firing so much?
-	    });
-    } else {
-    	console.log('user undefined? ', user)
-    }
-  });*/
-
   socket.on('getUsers', (u, callback) => {
 	getUsers(u, (err, userList) => {
 		if (err) throw err;
-		// socket.emit('receiveUsers', {userList});
 		callback({userList: userList});
 	});
   })
-
-/*  socket.on('getMessages', (data) => {
-    console.log(data.selectedRecipient);
-    getMessages(data.selectedRecipient, (err, messageBuffer) => {
-    	socket.emit('receiveMessages', {messageBuffer});
-    });
-  });*/
 
   socket.on('sendMessage', (data, callback) => {
     console.log('Message received, saving: ', JSON.stringify(data));
@@ -78,8 +44,6 @@ io.on('connection', (socket) => {
 upsertMessage = (message, callback) => {//upsert
 	r.connect({db: 'vedi'}, (err, conn) => {
 		if (err) callback(err);
-		// getMessages(newMessage.users, (err, messageID) => {
-		// if (err) callback(err);
 		r.table('messaging').filter({users: message.users}).count().gt(0).run(conn, (err, result) => {
 			if (err) callback(err);
 			if (result) {
@@ -133,10 +97,6 @@ getMessages = (users, callback) => {
 						console.log('getMessages result 2: ', result);
 						callback(result)
 					}
-					// result.toArray((err, results) => {
-					// 	if (err) callback(err);
-					// 	callback(null, results);
-					// })
 				})
 			} else {
 				console.log('No records')
@@ -153,45 +113,11 @@ getUsers = (currentUser, callback) => {
 			if (err) callback(err);
 			cursor.toArray((err, results) => {
 				if (err) callback (err);
-				// console.log('Results:', results);
-				// var result = [];
-				// results.forEach((user) => {
-				// 	result.push(user);
-				// })
 				callback(null, results);
 			})
 		})
 	})
 }
-
-/*router.get ('/drop', (req, res) => {
-	r.connect({db: 'vedi'}, (err, conn) => {
-		r.db('vedi').tableList().run(conn, (err, res) => {
-			if (err) throw err;
-			if (!_.find(res, tables)) {
-				console.log('Exists. Dropping...');
-				tables.forEach((table) => {
-					r.db('vedi').tableDrop(table).run(conn, () => {
-						console.log('Dropped \'' + table + '\', in Vedi');
-						r.db('vedi').tableCreate(table).run(conn, (err, res) => {
-							if (err) throw err;
-							console.log(res);
-						})
-					})
-				})
-			} else {
-				console.log('Does not exist, creating...')
-				tables.forEach((table) => {
-					r.db('vedi').tableCreate(table).run(conn, (err, res) => {
-							if (err) throw err;
-							console.log(res);
-						})
-					})
-				}
-			})
-		})
-		res.send('ok')
-	})*/
 
 userLocationUpsert = (node, callback) => {
 	r.connect({db: 'vedi'}, (err, conn) => {
@@ -276,16 +202,13 @@ userUpsert = (node, callback) => {
 }
 
 save = function (node, callback) {
-	// req.session.user = node.user.id;
 	userUpsert(node, (err, res) => {
 		if (err) console.log(err);
-		// req.session.user = res;
 		console.log('User: ', node.user.id);
 	})
 	console.log('Inserting/Appending path');
 	userLocationUpsert(node, (err, res) => {
 		if (err) throw err;
-		// req.session.pathID = res;
 		callback(null, res)
 		console.log('Node added to path: ', res)
 	})
