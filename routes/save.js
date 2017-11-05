@@ -7,9 +7,11 @@ var tables = ['userLocation', 'user', 'messaging']
 
 const WebSocket = require('ws')
 const wss = new WebSocket.Server({ port: 8000 });
+const wss2 = new WebSocket.Server({ port: 8888 });
 
 var socketArr = {};
 var clientArr = [];
+var clientArr2 = [];
 var clientCount = 0;
 
 clientExists = () => {
@@ -47,6 +49,68 @@ clientSocketUpsert = (socket, messageSender) => {
 	// socket.id = clientCount;
 }
 
+wss2.on('connection', (socket2) => {
+	console.log('8888 connected')
+	socket2.onmessage = (event) => {
+		let request = {};
+		let data = JSON.parse(event.data);
+		let messageSender = data.user.id;
+		if (!_.find(clientArr2, ['id', messageSender])) {
+			let socketObj2 = {
+				id: messageSender,
+				socket: socket2,
+			}
+
+			clientArr2.push(socketObj2);
+			console.log('clientArr2 contains::', messageSender);
+		}
+
+		switch (data.type) {
+			case 'addNode' :
+				save(data, (err, pathID) => {
+					if (err) throw err;
+					//send pathID
+					request = {
+						type: 'onAddNode',
+						recipient: data.user.id,
+						pathID: pathID,
+					}
+					console.log('save::', pathID)
+					// socket.send(JSON.stringify(request));
+					if (socket2) {emit(request, messageSender, clientArr2, false);}
+				})
+				break;
+
+			case 'userUpdate':
+				console.log('firing userUpdate::', data.user);
+				userUpsert(null, data.user, (err, response) => {
+					if (err) throw err;
+					request = {
+						type: 'onUserUpdate',
+						data: response,
+					}
+					console.log('userUpsert:: ', response);
+					if (socket2) {emit(request, messageSender, clientArr2, false);}
+				});
+				break;
+
+			default:
+				console.log('Defaulted');
+				break;
+
+		}
+	}
+
+	socket2.onclose = (event) => {
+		clientArr2.forEach((client, i) => {
+			if (client.socket2 == socket2) {
+				delete clientArr2[i];
+			}
+		})
+		console.log('Close2:: ' + event.code + ' ' + event.reason)
+	}
+});
+
 wss.on('connection', (socket) => {
 	console.log('on connection::getUsers')
 	getUsers((err, userList) => {
@@ -58,16 +122,7 @@ wss.on('connection', (socket) => {
 		console.log('userList::', userList)
 		socket.send(JSON.stringify(ack));
 	});
-	// clientArr = Object.assign(clientArr, {clientNumber: clientCount, socket: socket});
-	// clientArr.push({id: , socket: socket})
-	// clientCount = clientCount++;
-	// console.log('clientArr::', clientArr.clientNumber)
 
-
-	// console.log('clientArr::', clientArr);
-	// var thisSocket = socket;
-	// socketArr[socket.id] = socket;
-	// console.log('socketArr ::::', socket.id)//what is the id? How can the id be captured
 	socket.onclose = (event) => {
 		// let sockObj = _.find(clientArr, (o) => {
 		// 	return o.socket == socket
@@ -81,9 +136,9 @@ wss.on('connection', (socket) => {
 	}
 
 	socket.onmessage = (event) => {
-		var request = {};
+		let request = {};
 		let data = JSON.parse(event.data);
-		var messageSender = data.fromClient;
+		let messageSender = data.fromClient;
 		if (!_.find(clientArr, ['id', messageSender])) {
 			let socketObj = {
 				id: messageSender,
@@ -95,58 +150,18 @@ wss.on('connection', (socket) => {
 		}
 
 		switch (data.type) {
-
-			case 'addNode':
-				save(data.node, (err, pathID) => {
-					if (err) throw err;
-					//send pathID
-					request = {
-						type: 'onAddNode',
-						recipient: data.node.user.id,
-						pathID: pathID,
-					}
-					console.log('save::', pathID)
-					// socket.send(JSON.stringify(request));
-					if (socket) {emit(request, messageSender, false);}
-				})
-				break;
-
-			case 'userUpdate':
-				console.log('userUpdate::?');
-				userUpsert(null, data.requestingClient, socket, (err, response) => {
-					if (err) throw err;
-					request = {
-						type: 'onUserUpdate',
-						data: response,
-					}
-					console.log('userUpsert:: ', response);
-					if (socket) {emit(request, messageSender, false);}
-				});
-				break;
-
 			case 'sendMessage':
 				upsertMessage(data, (err, result) => {
 					if (err) throw err;
-					// console.log("client exists::", messageSender);
-					// console.log('upsertMessage result: ', result);
-					// callback(true);
 					let eventName = 'messageReceived: ' + data.message.recipient;
 					request = {
 						type: 'onMessageReceived',
 						sender: data.message.sender,
 						recipient: data.message.recipient,
 					};
-					// console.log('Firing event::', data)
-					// socket.send(JSON.stringify(request));
-
-					// socket.send(eventName, data, (err, res) => {
-					// 	if (err) throw err;
-					// 	console.log('res::::::::::::', res);
-					// });
 					let recipient = data.users;
 					console.log('Sending message to::', eventName)
-					emit(request, recipient, false);
-					// if (socket) {console.log('Sending~~')}//emit
+					emit(request, recipient, clientArr, false);
 				});
 				break;
 
@@ -159,7 +174,7 @@ wss.on('connection', (socket) => {
 						users: res.users,
 					}
 					// console.log('messageBuffer::', res)
-					if (socket) {emit(request, messageSender, false);}
+					if (socket) {emit(request, messageSender, clientArr, false);}
 				});
 				break;
 
@@ -168,7 +183,7 @@ wss.on('connection', (socket) => {
 	}
 });
 
-emit = (message, recipient, sendAll) => {
+emit = (message, recipient, clientArr, sendAll) => {
 	// console.log('Emitting::', recipient, socket)
 	if (sendAll) {
 		for (i = 0; i < clientArr.length; i++) {
@@ -265,9 +280,7 @@ getMessages = (users, callback) => {
 }
 
 getUsers = (callback) => {
-	r.connect({
-		db: 'vedi'
-	}, (err, conn) => {
+	r.connect({db: 'vedi'}, (err, conn) => {
 		if (err) throw err;
 		r.table('user').pluck('photo', 'name', 'id').run(conn, (err, cursor) => {
 			if (err) callback(err);
@@ -320,28 +333,36 @@ userLocationUpsert = (node, callback) => {
 	})
 }
 
-userUpsert = (node, id, socket, callback) => {
+userUpsert = (node, user, callback) => {
 	console.log('node:: ', node);
-	console.log('user:: ', id);
-	user = id != null ? id : node.user;
+	console.log('user:: ', user);
+	// var user = user != null ? user : node.user;
 	r.connect({db: 'vedi'}, (err, conn) => {
 		if (err) throw err;
-		if (!node) {
-			r.table('user').insert({
-				id: user, 
-				lastLocation: {
-					latitude: node.latitude,
-					longitude: node.longitude,
-					timestamp: node.timestamp,
-				}
-			}, {conflict: 'replace'}).run(conn, (err, res) => {
-				if (err) throw err;
+		if (node) {
+			let lastLocation = {
+				latitude: node.latitude,
+				longitude: node.longitude,
+				timestamp: node.timestamp,
+			};
+			console.log('userUpsert :: node exists')
+			r.table('user').get(node.user.id).update({lastLocation: lastLocation}).default({}).run(conn, (err, res) => {
+				if (err) callback(err)
 				callback(null, res);
 			});
 		}
-		// } else {
-		//  r.table('user').
-		// }
+		if (user) {
+			console.log('userUpsert :: user does not exist', user)
+			r.table('user').insert({
+				id: user.id,
+				name: user.name,
+				email: user.email,
+				photo: user.photo,
+			}, {conflict: 'update'}).run(conn, (err, res) => {
+				if (err) callback(err);
+				callback(null, res)
+			})
+		}
 	})
 }
 
@@ -400,8 +421,8 @@ userUpsert = (node, id, socket, callback) => {
 	})
 }*/
 
-save = function(node, callback) {
-	userUpsert(node, null, null, (err, res) => {
+save = (node, callback) => {
+	userUpsert(node, null, (err, res) => {
 		if (err) console.log(err);
 		console.log('User: ', node.user.id);
 	})
