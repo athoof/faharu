@@ -15,6 +15,7 @@ var display = require('./routes/display');
 var map = require('./routes/map');
 var client = require('./routes/client');
 var socket = require('./routes/socket');
+var users = require('./routes/users');
 
 var app = express();
 
@@ -40,6 +41,7 @@ app.use('/display', display);
 app.use('/map', map);
 app.use('/client', client);
 app.use('/socket', socket);
+app.use('/users', users);
 
 var sess = {
 	secret: 'faharu',

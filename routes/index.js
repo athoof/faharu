@@ -11,7 +11,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/download', (req, res) => {
-	var file = 'public/downloads/odi_1.2.apk';
+	var file = 'public/downloads/odi-1.6.8-release.apk';
 	res.download(file);
 	// res.render('index', { title: 'Faharu' });
 });
