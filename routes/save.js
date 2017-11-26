@@ -27,9 +27,6 @@ clientExists = () => {
 }
 
 clientSocketUpsert = (socket, messageSender) => {
-	// clientExists(socket, (err, result) => {
-	// 	if (err) throw err;
-	// console.log('result::::', result)
 	r.connect({db: 'vedi'}, (err, conn) => {
 		// r.table('user').filter({id: '107448915064089719236'}).run(conn, (err, res) => {
 		if (err) throw err;
@@ -66,6 +63,7 @@ wss2.on('connection', (socket2) => {
 		}
 
 		switch (data.type) {
+
 			case 'addNode' :
 				save(data, (err, pathID) => {
 					if (err) throw err;
@@ -76,9 +74,19 @@ wss2.on('connection', (socket2) => {
 						pathID: pathID,
 					}
 					console.log('save::', pathID)
-					// socket.send(JSON.stringify(request));
 					if (socket2) {emit(request, messageSender, clientArr2, false);}
 				})
+				break;
+
+			case 'ping':
+				var date = new Date();
+				var time = date.getTime();
+				pongTime = time - data.pingTime;
+				request = {
+					type: 'pong',
+					pongTime: pongTime,
+				}
+				if (socket2) {emit(request, messageSender, clientArr2, false);}
 				break;
 
 			case 'userUpdate':
@@ -190,15 +198,15 @@ emit = (message, recipient, clientArr, sendAll) => {
 			clientArr[id].send(JSON.stringify(message));
 		}
 	} else {
-
 		if (!Array.isArray(recipient)) {
 			recipient = [recipient];
 		}
 		recipient.forEach((r) => {
 			let sockObj = _.find(clientArr, ['id', r]);
 			if (typeof sockObj !== 'undefined') {
-				console.log('sockObj.id::', sockObj.id)
-				console.log('message::', message.type)
+				// Uncomment for testing emit();
+				// console.log('sockObj.id::', sockObj.id)
+				// console.log('message::', message.type)
 				sockObj.socket.send(JSON.stringify(message));
 			} else {
 				console.log('sockObjUndefined :: ')
