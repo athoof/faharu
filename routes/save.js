@@ -9,59 +9,29 @@ const WebSocket = require('ws')
 const wss = new WebSocket.Server({ port: 8000 });
 const wss2 = new WebSocket.Server({ port: 8888 });
 
-var socketArr = {};
-var clientArr = [];
-var clientArr2 = [];
-var clientCount = 0;
-
-clientExists = () => {
-	r.connect({db: 'vedi'}, (err, conn) => {
-		r.table('user').filter((user) => {
-			return user('id').eq(id);
-		}).run(conn, (err, res) => {
-			if (err) throw err;
-			console.log('clientExists::', res);
-			return true
-		})
-	})
-}
-
-clientSocketUpsert = (socket, messageSender) => {
-	r.connect({db: 'vedi'}, (err, conn) => {
-		// r.table('user').filter({id: '107448915064089719236'}).run(conn, (err, res) => {
-		if (err) throw err;
-		r.table('user').insert({
-			id: messageSender,
-			socket: socket,
-		}, {
-			conflict: 'update'
-		}).run(conn, (err, res) => {
-			if (err) throw err;
-			// callback(null, res);
-			console.log('clientSocketUpsert::', res)
-		});
-		// });
-	});
-	// });//clientExists
-	// socket.id = clientCount;
-}
+var clientArr = {};
+var clientArr2 = {};
 
 wss2.on('connection', (socket2) => {
 	console.log('8888 connected')
+	// if client closes socket
+	socket2.onclose = (event) => {
+		let s = _.find(clientArr2, ['socket', socket2]);// find client's socket
+		if (s) {
+			clientArr2[s.id].close();// close from server side just to be sure
+			delete clientArr[s.id];// delete socket
+		}
+	}
+
 	socket2.onmessage = (event) => {
 		let request = {};
 		let data = JSON.parse(event.data);
 		let messageSender = data.user.id;
-		if (!_.find(clientArr2, ['id', messageSender])) {
-			let socketObj2 = {
-				id: messageSender,
-				socket: socket2,
-			}
 
-			clientArr2.push(socketObj2);
-			console.log('clientArr2 contains::', messageSender);
+		// if socket for this client does not exist...
+		if (!_.find(clientArr2, ['socket', socket2])) {
+			clientArr2[messageSender] = socket2; // ... add socket
 		}
-
 		switch (data.type) {
 
 			case 'addNode' :
@@ -74,7 +44,7 @@ wss2.on('connection', (socket2) => {
 						pathID: pathID,
 					}
 					console.log('save::', pathID)
-					if (socket2) {emit(request, messageSender, clientArr2, false);}
+					if (socket2) {emit(request, messageSender, clientArr2);}
 				})
 				break;
 
@@ -86,7 +56,7 @@ wss2.on('connection', (socket2) => {
 					type: 'pong',
 					pongTime: pongTime,
 				}
-				if (socket2) {emit(request, messageSender, clientArr2, false);}
+				if (socket2) {emit(request, messageSender, clientArr2);}
 				break;
 
 			case 'userUpdate':
@@ -98,7 +68,7 @@ wss2.on('connection', (socket2) => {
 						data: response,
 					}
 					console.log('userUpsert:: ', response);
-					if (socket2) {emit(request, messageSender, clientArr2, false);}
+					if (socket2) {emit(request, messageSender, clientArr2);}
 				});
 				break;
 
@@ -108,53 +78,36 @@ wss2.on('connection', (socket2) => {
 
 		}
 	}
-
-	socket2.onclose = (event) => {
-		clientArr2.forEach((client, i) => {
-			if (client.socket2 == socket2) {
-				delete clientArr2[i];
-			}
-		})
-		console.log('Close2:: ' + event.code + ' ' + event.reason)
-	}
 });
 
 wss.on('connection', (socket) => {
 	console.log('on connection::getUsers')
 	getUsers((err, userList) => {
 		if (err) throw err;
-		ack = {
+		response = {
 			type: 'onGetUsers',
 			userList: userList,
 		};
 		console.log('userList::', userList)
-		socket.send(JSON.stringify(ack));
+		socket.send(JSON.stringify(response));
 	});
 
 	socket.onclose = (event) => {
-		// let sockObj = _.find(clientArr, (o) => {
-		// 	return o.socket == socket
-		// });
-		clientArr.forEach((client, i) => {
-			if (client.socket == socket) {
-				delete clientArr[i];
-			}
-		})
-		console.log('Close:: ' + event.code + event.reason)
+		// clientArr = _.omit(clientArr, ['socket', socket]);
+		let s = _.find(clientArr, ['socket', socket]);
+		if (s) {
+			clientArr[s.id].close();
+			delete clientArr[s.id];
+		}
 	}
 
 	socket.onmessage = (event) => {
 		let request = {};
 		let data = JSON.parse(event.data);
 		let messageSender = data.fromClient;
-		if (!_.find(clientArr, ['id', messageSender])) {
-			let socketObj = {
-				id: messageSender,
-				socket: socket,
-			}
-
-			clientArr.push(socketObj);
-			console.log('clientArr contains::', messageSender);
+		
+		if (!_.find(clientArr, ['socket', socket])) {
+			clientArr[messageSender] = socket; 
 		}
 
 		switch (data.type) {
@@ -169,7 +122,7 @@ wss.on('connection', (socket) => {
 					};
 					let recipient = data.users;
 					console.log('Sending message to::', eventName)
-					emit(request, recipient, clientArr, false);
+					emit(request, recipient, clientArr);
 				});
 				break;
 
@@ -182,7 +135,7 @@ wss.on('connection', (socket) => {
 						users: res.users,
 					}
 					// console.log('messageBuffer::', res)
-					if (socket) {emit(request, messageSender, clientArr, false);}
+					if (socket) {emit(request, messageSender, clientArr);}
 				});
 				break;
 
@@ -191,29 +144,31 @@ wss.on('connection', (socket) => {
 	}
 });
 
-emit = (message, recipient, clientArr, sendAll) => {
-	// console.log('Emitting::', recipient, socket)
-	if (sendAll) {
-		for (i = 0; i < clientArr.length; i++) {
-			clientArr[id].send(JSON.stringify(message));
-		}
-	} else {
-		if (!Array.isArray(recipient)) {
-			recipient = [recipient];
-		}
-		recipient.forEach((r) => {
-			let sockObj = _.find(clientArr, ['id', r]);
-			if (typeof sockObj !== 'undefined') {
-				// Uncomment for testing emit();
-				// console.log('sockObj.id::', sockObj.id)
-				// console.log('message::', message.type)
-				sockObj.socket.send(JSON.stringify(message));
+emit = (message, recipient, clientArr) => {
+	if (!Array.isArray(recipient)) {
+		recipient = [recipient];
+	}
+	if (typeof clientArr !== undefined && clientArr !== null) {
+		// let sockObj = _.find(clientArr, ['id', r]);
+		recipient.forEach((recipient) => {
+			let socket = clientArr[recipient];
+			if (typeof socket !== 'undefined') {
+				socket.send(JSON.stringify(message));
+				// console.log(socket)
+
 			} else {
-				console.log('sockObjUndefined :: ')
+				console.log('Recipient undefined::', socket)
 			}
 		})
+		/*if (typeof socket !== 'undefined' && socket.readyState == '1') {
+			// Uncomment for testing emit();
+			// console.log('sockObj.id::', sockObj.id)
+			// console.log('message::', message.type)
+			socket.send(JSON.stringify(message));
+		} else {
+			console.log('socket not ready :: ', socket)
+		}*/
 	}
-	// socket.send(JSON.stringify(request));
 }
 
 upsertMessage = (message, callback) => { //upsert
