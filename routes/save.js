@@ -12,12 +12,36 @@ const wss2 = new WebSocket.Server({ port: 8888 });
 var clientArr = {};
 var clientArr2 = {};
 
+ping = (socket) => {
+	let d = new Date();
+	let t = d.getTime();
+	let ping = {
+		type: 'ping',
+		ping: t,
+	}
+	// client.pinger = setInterval(() => {client.send(JSON.stringify(ping))}, 500);
+	if (socket.readyState === 1)
+		socket.send(JSON.stringify(ping));
+}
+
+destroyPinger = (client) => {
+}
+
 wss2.on('connection', (socket2) => {
 	console.log('8888 connected')
+	if (socket2.readyState === 1) {
+		socket2.pinger = setInterval(() => {ping(socket2)}, 500)
+	}
+
+	socket2.onerror = (event) => {
+		console.log('ERROR::', event)
+	}
+
 	// if client closes socket
 	socket2.onclose = (event) => {
 		let s = _.find(clientArr2, ['socket', socket2]);// find client's socket
 		if (s) {
+			clearInterval(clientArr2[s.id].pinger);
 			clientArr2[s.id].close();// close from server side just to be sure
 			delete clientArr[s.id];// delete socket
 		}
@@ -26,13 +50,29 @@ wss2.on('connection', (socket2) => {
 	socket2.onmessage = (event) => {
 		let request = {};
 		let data = JSON.parse(event.data);
-		let messageSender = data.user.id;
+		let messageSender = typeof data.user !== 'undefined' && data.user !== null ? data.user.id : null
 
 		// if socket for this client does not exist...
 		if (!_.find(clientArr2, ['socket', socket2])) {
-			clientArr2[messageSender] = socket2; // ... add socket
+			
+			if (messageSender !== null) {
+				clientArr2[messageSender] = socket2; // ... add socket			
+				console.log(clientArr2)
+			}
 		}
+
+
 		switch (data.type) {
+
+			case 'isAlive' :
+				console.log('isAlive::', data);
+				if (data.user.id) {
+					userUpsert(data, null, (err, response) => {
+						if (err) throw err;
+						console.log(data.user.id + ' is alive.');
+					})
+				}
+				break;
 
 			case 'addNode' :
 				save(data, (err, pathID) => {
@@ -48,7 +88,7 @@ wss2.on('connection', (socket2) => {
 				})
 				break;
 
-			case 'ping':
+			case 'pong':
 				var date = new Date();
 				var time = date.getTime();
 				pongTime = time - data.pingTime;
@@ -270,6 +310,7 @@ userLocationUpsert = (node, callback) => {
 					latitude: node.latitude,
 					longitude: node.longitude,
 					timestamp: node.timestamp,
+					ping: node.ping,
 				})
 			}).run(conn, (err, r) => {
 				if (err) callback(err);
@@ -303,16 +344,18 @@ userUpsert = (node, user, callback) => {
 	r.connect({db: 'vedi'}, (err, conn) => {
 		if (err) throw err;
 		if (node) {
-			let lastLocation = {
-				latitude: node.latitude,
-				longitude: node.longitude,
-				timestamp: node.timestamp,
-			};
-			console.log('userUpsert :: node exists')
-			r.table('user').get(node.user.id).update({lastLocation: lastLocation}).default({}).run(conn, (err, res) => {
-				if (err) callback(err)
-				callback(null, res);
-			});
+			if (node.latitude !== null && node.longitude !== null) {
+				let lastLocation = {
+					latitude: node.latitude,
+					longitude: node.longitude,
+					timestamp: node.timestamp,
+				};
+				console.log('userUpsert :: node exists')
+				r.table('user').get(node.user.id).update({lastLocation: lastLocation}).default({}).run(conn, (err, res) => {
+					if (err) callback(err)
+					callback(null, res);
+				});
+			}
 		}
 		if (user) {
 			console.log('userUpsert :: user does not exist', user)

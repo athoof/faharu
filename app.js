@@ -19,7 +19,6 @@ var users = require('./routes/users');
 
 var app = express();
 
-app.use(vhost('vidhaafaiy.com', require('./vidhaafaiy/app')))//for a different project
 // app.use(router);
 
 // view engine setup
