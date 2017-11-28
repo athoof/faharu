@@ -5,7 +5,7 @@ var router = express.Router();
 
 var bodyParser = require('body-parser');
 var connection;
-var apk = 'odi-1.7.0-release.apk';
+var apk = 'odi-1.7.3-release.apk';
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Faharu', apk: apk });

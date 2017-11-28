@@ -1,0 +1,21 @@
+extends layout
+
+block content
+	h1= Kandu
+	div.boat
+		table
+
+			each record in data
+				tr
+					td= record.user.name
+					td Latitude
+					td Longitude
+					td Timestamp
+				each node in record.path
+					tr
+						td= node.nodeNumber
+						td= node.latitude
+						td= node.longitude
+						td= node.timestamp
+					//- td= JSON.stringify(record.path)
+					
