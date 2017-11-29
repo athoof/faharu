@@ -5,17 +5,11 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
-var connect = require('connect');
-var vhost = require('vhost');
 
 var index = require('./routes/index');
-var connectdb = require('./routes/connectdb');
 var save = require('./routes/save');
 var raw = require('./routes/raw');
 var map = require('./routes/map');
-var client = require('./routes/client');
-var socket = require('./routes/socket');
-var users = require('./routes/users');
 
 var app = express();
 
@@ -34,13 +28,9 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
-app.use('/connectdb', connectdb);
 app.use('/save', save);
 app.use('/raw', raw);
 app.use('/map', map);
-app.use('/client', client);
-app.use('/socket', socket);
-app.use('/users', users);
 
 var sess = {
 	secret: 'faharu',

@@ -11,10 +11,9 @@ h1 {
 }
 
 #download a {
-	-webkit-box-shadow: inset 0px -10px 60px 8px rgba(0,55,88,0.15); 
-	-moz-box-shadow: inset 0px -10px 60px 8px rgba(0,55,88,0.15); 
-	box-shadow: inset 0px -10px 60px 8px rgba(0,55,88,0.15);
-	border: 1px solid rgba(255,255,255,0.55);
+	transition: box-shadow 0.5s, color 0.5s, text-shadow 0.5s, background-color 0.5s;
+	box-shadow: 0px 10px 45px 5px #D5EFF6;
+	border: 1px solid #5BC9EA;
 	margin: 0 auto;
 	text-align: center;
 	width: 200px;
@@ -24,18 +23,20 @@ h1 {
 	line-height: 1.8em;
 	vertical-align: middle;
 	padding: 5px;
-	text-shadow: 0 0px 5px rgba(0,0,0,0.8);
-	color: white;
-	background-color: rgba(255,255,255,0.99);
+	/*text-shadow: 0 0px 5px rgba(0,0,0,0.8);*/
+	text-shadow: 0 0 5px #48CAF1;
+	color: #246477;
+	background-color: #F7F7F7;
 	border-radius: 8px;
 }
 
 #download a:hover {
 	-webkit-box-shadow: 0px 5px 25px -2px rgba(0,55,111,0.8); 
 	-moz-box-shadow: 0px 5px 25px -2px rgba(0,55,111,0.8); 
-	box-shadow: 0px 5px 25px -2px rgba(0,55,111,0.8);
-	text-shadow: 0 0 5px rgba(55,55,55, 0.2);
-	color: rgb(20,20,20);
+	box-shadow: 0px 5px 25px 2px #008CB6;
+	text-shadow: 0 0 22px #fff;
+	color: #C4E7F2;
+	background-color: #01566F;
 }
 
 #userList ul li {
@@ -72,6 +73,7 @@ nav {
 }
 
 nav a {
+	transition: text-shadow 0.5s;
 	font-size: 3em;
 	font-weight: bolder;
 	text-decoration: none;
@@ -86,17 +88,83 @@ nav a:hover {
 	text-shadow: 0 0 12px rgba(255,255,255,0.5);
 }
 
-.boat {
-
+.boat, .raw {
 	font-family: monospace;
 	margin-top: 20vh;
 	height: 400px;
-	width: 480px;
+	width: auto;
 	margin: auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 
-td {
-	border: 1px solid #7faef9;
-	padding: 5px;
-	border-radius: 4px
+.raw table {
+	background-color: #F8F8F8;
+	margin: 8px auto;
+	border: 8px solid #48CAF1;
+	border-collapse: separate;
+	border-radius: 90px;
+	color: #225B6D;
+	/*background-color: #EAF0F0;*/
+}
+
+.raw tr, .raw tr td {
+	background-color: #F8F8F8;
+}
+
+
+.raw td {
+	padding: 6px 12px;
+	min-width: 150px;
+	max-width: 150px;
+	vertical-align: middle;
+}
+
+.raw tr:last-child {
+	/*border-bottom-left-radius: 8px;*/
+	border-bottom-right-radius: 12px;
+}
+.raw tr:last-child {
+	border-bottom-left-radius: 12px;
+	/*border-bottom-right-radius: 8px;*/
+}
+
+.raw table tr:last-child td:last-child {
+	border-bottom-right-radius: 12px;
+}
+
+.raw table tr:last-child td:first-child {
+	border-bottom-left-radius: 12px;
+}
+
+
+.raw table:nth-child(1n) td {
+	background-color: #F8F8F8;
+}
+
+.raw table:nth-child(2n) td {
+	background-color: #F8F8F8;
+}
+
+.raw tr:nth-child(2n) td {
+	background-color: #E4F2F5;
+}
+
+.raw th {
+/*	border-left: 1px solid #294B80;
+	border-right: 1px solid #294B80;*/
+	border-bottom: 1px solid #48CAF1;
+	border-top-left-radius: 12px;
+	border-top-right-radius: 12px;
+	padding: 6px 0;
+	font-weight: bold;
+}
+
+.raw #node, .raw #ping {
+	text-align: center;	
+}
+
+.test {
+	background-color: red;
 }

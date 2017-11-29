@@ -1,6 +1,11 @@
 extends layout
 
 block content
+	br
+	div#download
+		- var link = 'Download<br/> ' + apk
+		a(href='/download') !{link}
+
 	div.boat
 		pre.
 			<br/>
@@ -25,6 +30,3 @@ block content
 			.,-~"^"~-,.,-~"^"~-,.,-~"^"~-,.,-~"^"~-,.,-~"^"~-,.,^"~-,.
 			"^"~-,.,-~"^"~-,.,-~"^"~-,.,-~"^"~-,.,-~"^"~-,.,-~"^,.,-~"
 			"~-,.,-~"^"~-,.,-~"^"~-,.,-~"^"~-,.,-~"^"~-,.,-~"^"~,-~"^"
-	div#download
-		- var link = 'Download<br/> ' + apk
-		a(href='/download') !{link}

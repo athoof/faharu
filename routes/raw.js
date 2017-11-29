@@ -7,7 +7,10 @@ var x;
 
 router.get('/', (req, res) => {
 	r.connect({db: 'vedi'}, (err, conn) => {
-		r.table('userLocation').run(conn, (err, cursor) => {
+		r.table('userLocation').eqJoin('user', r.db('vedi').table('user'))
+		.without('id').zip()
+		.pluck(['id', 'lastLocation', 'name', 'path'])
+		.run(conn, (err, cursor) => {
 			if (err) throw err;
 			cursor.toArray((err, result) => {
 				if (err) throw err;

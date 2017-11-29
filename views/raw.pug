@@ -2,20 +2,32 @@ extends layout
 
 block content
 	h1= Kandu
-	div.boat
-		table
-
-			each record in data
+	div.raw
+		each record in data
+			table.path.even
 				tr
-					td= record.user.name
-					td Latitude
-					td Longitude
-					td Timestamp
+					th= record.name
+					th Latitude
+					th Longitude
+					th Time recorded
+					th Latency (ms)
 				each node in record.path
 					tr
-						td= node.nodeNumber
-						td= node.latitude
-						td= node.longitude
-						td= node.timestamp
+						td#node= node.nodeNumber
+						td#lat= node.latitude
+						td#lng= node.longitude
+						- var timestamp = new Date(node.timestamp);
+						- timestamp = timestamp.toUTCString();
+						td#timestamp= timestamp
+						td#ping= - node.ping ? node.ping : 'Not recorded'
+
+	script(src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js")
+	script.
+
+		var t = $('#ping').map(() => {
+			return $(this).text();
+		});
+		console.log(t);
+
 					//- td= JSON.stringify(record.path)
 					
