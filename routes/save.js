@@ -9,63 +9,71 @@ const WebSocket = require('ws')
 const wss = new WebSocket.Server({ port: 8000 });
 const wss2 = new WebSocket.Server({ port: 8888 });
 
-var socketArr = {};
-var clientArr = [];
-var clientArr2 = [];
-var clientCount = 0;
+var clientArr = {};
+var clientArr2 = {};
 
-clientExists = () => {
-	r.connect({db: 'vedi'}, (err, conn) => {
-		r.table('user').filter((user) => {
-			return user('id').eq(id);
-		}).run(conn, (err, res) => {
-			if (err) throw err;
-			console.log('clientExists::', res);
-			return true
-		})
-	})
+ping = (socket) => {
+	let d = new Date();
+	let t = d.getTime();
+	let ping = {
+		type: 'ping',
+		ping: t,
+	}
+	// client.pinger = setInterval(() => {client.send(JSON.stringify(ping))}, 500);
+	if (socket.readyState === 1)
+		socket.send(JSON.stringify(ping));
 }
 
-clientSocketUpsert = (socket, messageSender) => {
-	// clientExists(socket, (err, result) => {
-	// 	if (err) throw err;
-	// console.log('result::::', result)
-	r.connect({db: 'vedi'}, (err, conn) => {
-		// r.table('user').filter({id: '107448915064089719236'}).run(conn, (err, res) => {
-		if (err) throw err;
-		r.table('user').insert({
-			id: messageSender,
-			socket: socket,
-		}, {
-			conflict: 'update'
-		}).run(conn, (err, res) => {
-			if (err) throw err;
-			// callback(null, res);
-			console.log('clientSocketUpsert::', res)
-		});
-		// });
-	});
-	// });//clientExists
-	// socket.id = clientCount;
+destroyPinger = (client) => {
 }
 
 wss2.on('connection', (socket2) => {
 	console.log('8888 connected')
+	if (socket2.readyState === 1) {
+		socket2.pinger = setInterval(() => {ping(socket2)}, 500)
+	}
+
+	socket2.onerror = (event) => {
+		console.log('ERROR::', event)
+	}
+
+	// if client closes socket
+	socket2.onclose = (event) => {
+		let s = _.find(clientArr2, ['socket', socket2]);// find client's socket
+		if (s) {
+			clearInterval(clientArr2[s.id].pinger);
+			clientArr2[s.id].close();// close from server side just to be sure
+			delete clientArr[s.id];// delete socket
+		}
+	}
+
 	socket2.onmessage = (event) => {
 		let request = {};
 		let data = JSON.parse(event.data);
-		let messageSender = data.user.id;
-		if (!_.find(clientArr2, ['id', messageSender])) {
-			let socketObj2 = {
-				id: messageSender,
-				socket: socket2,
-			}
+		let messageSender = typeof data.user !== 'undefined' && data.user !== null ? data.user.id : null
 
-			clientArr2.push(socketObj2);
-			console.log('clientArr2 contains::', messageSender);
+		// if socket for this client does not exist...
+		if (!_.find(clientArr2, ['socket', socket2])) {
+			
+			if (messageSender !== null) {
+				clientArr2[messageSender] = socket2; // ... add socket			
+				console.log(clientArr2)
+			}
 		}
 
+
 		switch (data.type) {
+
+			case 'isAlive' :
+				console.log('isAlive::', data);
+				if (data.user.id) {
+					userUpsert(data, null, (err, response) => {
+						if (err) throw err;
+						console.log(data.user.id + ' is alive.');
+					})
+				}
+				break;
+
 			case 'addNode' :
 				save(data, (err, pathID) => {
 					if (err) throw err;
@@ -76,9 +84,19 @@ wss2.on('connection', (socket2) => {
 						pathID: pathID,
 					}
 					console.log('save::', pathID)
-					// socket.send(JSON.stringify(request));
-					if (socket2) {emit(request, messageSender, clientArr2, false);}
+					if (socket2) {emit(request, messageSender, clientArr2);}
 				})
+				break;
+
+			case 'pong':
+				var date = new Date();
+				var time = date.getTime();
+				pongTime = time - data.pingTime;
+				request = {
+					type: 'pong',
+					pongTime: pongTime,
+				}
+				if (socket2) {emit(request, messageSender, clientArr2);}
 				break;
 
 			case 'userUpdate':
@@ -90,7 +108,7 @@ wss2.on('connection', (socket2) => {
 						data: response,
 					}
 					console.log('userUpsert:: ', response);
-					if (socket2) {emit(request, messageSender, clientArr2, false);}
+					if (socket2) {emit(request, messageSender, clientArr2);}
 				});
 				break;
 
@@ -100,53 +118,36 @@ wss2.on('connection', (socket2) => {
 
 		}
 	}
-
-	socket2.onclose = (event) => {
-		clientArr2.forEach((client, i) => {
-			if (client.socket2 == socket2) {
-				delete clientArr2[i];
-			}
-		})
-		console.log('Close2:: ' + event.code + ' ' + event.reason)
-	}
 });
 
 wss.on('connection', (socket) => {
 	console.log('on connection::getUsers')
 	getUsers((err, userList) => {
 		if (err) throw err;
-		ack = {
+		response = {
 			type: 'onGetUsers',
 			userList: userList,
 		};
 		console.log('userList::', userList)
-		socket.send(JSON.stringify(ack));
+		socket.send(JSON.stringify(response));
 	});
 
 	socket.onclose = (event) => {
-		// let sockObj = _.find(clientArr, (o) => {
-		// 	return o.socket == socket
-		// });
-		clientArr.forEach((client, i) => {
-			if (client.socket == socket) {
-				delete clientArr[i];
-			}
-		})
-		console.log('Close:: ' + event.code + event.reason)
+		// clientArr = _.omit(clientArr, ['socket', socket]);
+		let s = _.find(clientArr, ['socket', socket]);
+		if (s) {
+			clientArr[s.id].close();
+			delete clientArr[s.id];
+		}
 	}
 
 	socket.onmessage = (event) => {
 		let request = {};
 		let data = JSON.parse(event.data);
 		let messageSender = data.fromClient;
-		if (!_.find(clientArr, ['id', messageSender])) {
-			let socketObj = {
-				id: messageSender,
-				socket: socket,
-			}
-
-			clientArr.push(socketObj);
-			console.log('clientArr contains::', messageSender);
+		
+		if (!_.find(clientArr, ['socket', socket])) {
+			clientArr[messageSender] = socket; 
 		}
 
 		switch (data.type) {
@@ -161,7 +162,7 @@ wss.on('connection', (socket) => {
 					};
 					let recipient = data.users;
 					console.log('Sending message to::', eventName)
-					emit(request, recipient, clientArr, false);
+					emit(request, recipient, clientArr);
 				});
 				break;
 
@@ -174,7 +175,7 @@ wss.on('connection', (socket) => {
 						users: res.users,
 					}
 					// console.log('messageBuffer::', res)
-					if (socket) {emit(request, messageSender, clientArr, false);}
+					if (socket) {emit(request, messageSender, clientArr);}
 				});
 				break;
 
@@ -183,29 +184,31 @@ wss.on('connection', (socket) => {
 	}
 });
 
-emit = (message, recipient, clientArr, sendAll) => {
-	// console.log('Emitting::', recipient, socket)
-	if (sendAll) {
-		for (i = 0; i < clientArr.length; i++) {
-			clientArr[id].send(JSON.stringify(message));
-		}
-	} else {
+emit = (message, recipient, clientArr) => {
+	if (!Array.isArray(recipient)) {
+		recipient = [recipient];
+	}
+	if (typeof clientArr !== undefined && clientArr !== null) {
+		// let sockObj = _.find(clientArr, ['id', r]);
+		recipient.forEach((recipient) => {
+			let socket = clientArr[recipient];
+			if (typeof socket !== 'undefined') {
+				socket.send(JSON.stringify(message));
+				// console.log(socket)
 
-		if (!Array.isArray(recipient)) {
-			recipient = [recipient];
-		}
-		recipient.forEach((r) => {
-			let sockObj = _.find(clientArr, ['id', r]);
-			if (typeof sockObj !== 'undefined') {
-				console.log('sockObj.id::', sockObj.id)
-				console.log('message::', message.type)
-				sockObj.socket.send(JSON.stringify(message));
 			} else {
-				console.log('sockObjUndefined :: ')
+				console.log('Recipient undefined::', socket)
 			}
 		})
+		/*if (typeof socket !== 'undefined' && socket.readyState == '1') {
+			// Uncomment for testing emit();
+			// console.log('sockObj.id::', sockObj.id)
+			// console.log('message::', message.type)
+			socket.send(JSON.stringify(message));
+		} else {
+			console.log('socket not ready :: ', socket)
+		}*/
 	}
-	// socket.send(JSON.stringify(request));
 }
 
 upsertMessage = (message, callback) => { //upsert
@@ -307,6 +310,7 @@ userLocationUpsert = (node, callback) => {
 					latitude: node.latitude,
 					longitude: node.longitude,
 					timestamp: node.timestamp,
+					ping: node.ping,
 				})
 			}).run(conn, (err, r) => {
 				if (err) callback(err);
@@ -340,16 +344,18 @@ userUpsert = (node, user, callback) => {
 	r.connect({db: 'vedi'}, (err, conn) => {
 		if (err) throw err;
 		if (node) {
-			let lastLocation = {
-				latitude: node.latitude,
-				longitude: node.longitude,
-				timestamp: node.timestamp,
-			};
-			console.log('userUpsert :: node exists')
-			r.table('user').get(node.user.id).update({lastLocation: lastLocation}).default({}).run(conn, (err, res) => {
-				if (err) callback(err)
-				callback(null, res);
-			});
+			if (node.latitude !== null && node.longitude !== null) {
+				let lastLocation = {
+					latitude: node.latitude,
+					longitude: node.longitude,
+					timestamp: node.timestamp,
+				};
+				console.log('userUpsert :: node exists')
+				r.table('user').get(node.user.id).update({lastLocation: lastLocation}).default({}).run(conn, (err, res) => {
+					if (err) callback(err)
+					callback(null, res);
+				});
+			}
 		}
 		if (user) {
 			console.log('userUpsert :: user does not exist', user)

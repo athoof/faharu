@@ -15,19 +15,29 @@ block content
 	  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=",
 	  crossorigin="anonymous")
 
+	script(src="https://cdn.jsdelivr.net/npm/lodash@4.17.4/lodash.min.js")
 
 	div#map(style="height: 100vh; width: 100%")
 		script.
 			function initMap() {
+				var data = null;
+				var markerArr = [];
+				var socket = new WebSocket('ws://faharu.com:8787');
+				socket.onmessage = (event) => {
+					data = JSON.parse(event.data);
+					_.find(markerArr, ['title', data.new_val.name]).setPosition ( new google.maps.LatLng(data.new_val.lastLocation.latitude, data.new_val.lastLocation.longitude ) );
+					//- console.log(data);
+				}
+
 				var maldives = {lat: 4.178044, lng: 73.505828};
 				var center = maldives;
 				if (selectedUser !== null) {
-					console.log('selectedUser: ', selectedUser)
 					var selectedUser = !{JSON.stringify(selectedUser).replace(/<\//g, '<\\/')};
 					center = (selectedUser) ? {lat: selectedUser.lastLocation.latitude, lng: selectedUser.lastLocation.longitude} : center
+					//- console.log('selectedUser: ', selectedUser)
 				}
 
-				console.log('Centered on: ', center)
+				//- console.log('Centered on: ', center)
 				
 				var map = new google.maps.Map(document.getElementById('map'), {
 					zoom: 13,
@@ -38,7 +48,7 @@ block content
 				var paths = !{JSON.stringify(paths)};
 				//- var paths = !{paths}
 				if(paths !== null){
-					console.log('PATHS EXIST', paths)
+					//- console.log('PATHS EXIST', paths)
 
 					let polyArr = [];
 					paths.forEach((pathObj, index) => {
@@ -84,14 +94,16 @@ block content
 					})
 
 					polyArr.forEach((polyLine) => {
-						console.log('Added polyline')
+						//- console.log('Added polyline')
 						polyLine.setMap(map)
 					})
 
 				} else { console.log('No paths') }
 
 				userList.forEach((user) => {
-					var latLng = new google.maps.LatLng(user.lastLocation.latitude, user.lastLocation.longitude);
+					var lat = data ? data.new_val.lastLocation.latitude : user.lastLocation.latitude;
+					var lng = data ? data.new_val.lastLocation.longitude : user.lastLocation.longitude;
+					var latLng = new google.maps.LatLng(lat, lng);
 					var shape = {
 						coords: [1, 1, 1, 20, 18, 20, 18, 1],
 						type: 'poly'
@@ -111,7 +123,12 @@ block content
 						zIndex: 2,
 						map: map
 					});
+					markerArr.push(marker);
+					console.log(marker);
 				});
+				
+
+
 			}
 
 		script(async, defer, src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC0g37AIh4J1U1YeO_cN9g0gxnv6YnreYQ&callback=initMap")

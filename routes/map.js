@@ -4,6 +4,17 @@ var router = express.Router();
 var bodyParser = require('body-parser');
 var connection;
 var _ = require('lodash');
+const WebSocket = require('ws');
+
+const wss = new WebSocket.Server({ port: 8787 });
+
+wss.on('connection', (socket) => {
+	userFeed((err, changes) => {
+		if (err) throw err;
+		if (socket.readyState === 1)
+			socket.send(changes);
+	})
+});
 
 /* GET home page. */
 router.get('/', (req, res) => {
@@ -13,6 +24,10 @@ router.get('/', (req, res) => {
 		res.render('map', { title: 'Map: Select a user.', paths: null, userList: userList, selectedUser: null });
 	});
 });
+
+router.post('/:user', (req, res) => {
+
+})
 
 router.get('/:user', (req, res) => {
 	getUserList(null, (err, userList) => {
@@ -44,6 +59,19 @@ function getPaths(user, callback) {
 				// pathArr.push(r.path);
 				callback(null, r)
 			}) 
+		})
+	})
+}
+
+function userFeed(callback) {
+	r.connect({db: 'vedi'}, (err, conn) => {
+		if (err) callback(err);
+		r.table('user').pluck('id', 'name', 'lastLocation', 'photo').changes().run(conn, (err, cursor) => {
+			if (err) callback(err);
+			cursor.each((err, row) => {
+				if (err) callback(err);
+				callback(null, JSON.stringify(row));
+			})
 		})
 	})
 }

@@ -5,13 +5,14 @@ var router = express.Router();
 
 var bodyParser = require('body-parser');
 var connection;
+var apk = 'odi-1.7.3-release.apk';
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Faharu' });
+  res.render('index', { title: 'Faharu', apk: apk });
 });
 
 router.get('/download', (req, res) => {
-	var file = 'public/downloads/odi-1.6.8-release.apk';
+	var file = 'public/downloads/'+apk;
 	res.download(file);
 	// res.render('index', { title: 'Faharu' });
 });
