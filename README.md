@@ -29,7 +29,7 @@ If you would like to install the Faharu web server and site locally:
 
 4. Open a terminal/shell and navigate to desired folder.
 
-5. Input: ' git clone https://github.com/athoof/faharu.git && cd faharu && npm install && npm start '
+5. Input: ```git clone https://github.com/athoof/faharu.git && cd faharu && npm install && npm start```
 
 6. Point your browser to localhost or 127.0.0.1
 
@@ -45,7 +45,7 @@ If you would like to compile the Android APK yourself:
 
 5. Navigate to the 'android' folder in a shell
 
-6. Execute: ' ./gradlew assembleRelease '
+6. Execute: ```./gradlew assembleRelease```
 
 7. Find the complete file at android/app/build/outputs/apk
 
